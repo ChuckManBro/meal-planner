@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+	--calendar-columns: 3;
+	--radius-inner: 8px;
+	--radius-outer: 10px;
+	--color-gray-light: #d5d5d5;
+	--color-gray-dark: #616161;
+	--color-brown: #795548;
+	--color-red: #ce4438;
+	--color-orange: #e5802e;
+	--color-yellow: #e0b233;
+	--color-green: #029688;
+	--color-blue: #4285f4;
+	--color-blue-dark: #0061e0;
+	--color-purple: #9e69ae;
+}
+
+* {
+	margin: 0;
+	box-sizing: border-box;
+}
+
+html {
+	background-color: var(--color-gray-light);
+}
+
+.btn {
+	color: white;
+	background-color: var(--color-gray-dark);
+	border: none;
+	border-radius: var(--radius-inner);
+	font-size: 0.8rem;
+	font-weight: 500;
+	padding: 2px 6px;
+	cursor: pointer;
+}
+
+.btn:hover {
+	filter: brightness(85%);
+}
+
+.hidden {
+	display: none;
+}
+
+.red {
+	background-color: var(--color-red);
+	outline-color: var(--color-red);
+}
+
+.orange {
+	background-color: var(--color-orange);
+	outline-color: var(--color-orange);
+}
+
+.yellow {
+	background-color: var(--color-yellow);
+	outline-color: var(--color-yellow);
+}
+
+.green {
+	background-color: var(--color-green);
+	outline-color: var(--color-green);
+}
+
+.blue {
+	background-color: var(--color-blue);
+	outline-color: var(--color-blue);
+}
+
+.purple {
+	background-color: var(--color-purple);
+	outline-color: var(--color-purple);
+}
+
+.brown {
+	background-color: var(--color-brown);
+	outline-color: var(--color-brown);
+}
+
+.black {
+	background-color: #212121;
+	outline-color: #212121;
+}
+
+.gray {
+	background-color: var(--color-gray-dark);
+	outline-color: var(--color-gray-dark);
+}
+
+.white {
+	color: var(--color-gray-dark);
+	border: 1px solid var(--color-gray-light);
+	outline-color: var(--color-blue);
+}
