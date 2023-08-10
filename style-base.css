@@ -4,6 +4,7 @@
 	--calendar-columns: 3;
 	--radius-inner: 8px;
 	--radius-outer: 10px;
+	/* --color-white: white; */
 	--color-gray-light: #d5d5d5;
 	--color-gray-dark: #616161;
 	--color-brown: #795548;
@@ -12,7 +13,7 @@
 	--color-yellow: #e0b233;
 	--color-green: #029688;
 	--color-blue: #4285f4;
-	--color-blue-dark: #0061e0;
+	--color-blue-dark: #005fcc;
 	--color-purple: #9e69ae;
 }
 
@@ -22,75 +23,76 @@
 }
 
 html {
-	background-color: var(--color-gray-light);
-}
-
-.btn {
-	color: white;
 	background-color: var(--color-gray-dark);
-	border: none;
-	border-radius: var(--radius-inner);
-	font-size: 0.8rem;
-	font-weight: 500;
-	padding: 2px 6px;
-	cursor: pointer;
-}
-
-.btn:hover {
-	filter: brightness(85%);
+	-webkit-text-size-adjust: 100%; /* Mobile landscape fix */
 }
 
 .hidden {
-	display: none;
+	display: none !important;
+}
+
+button {
+	font-family: 'Roboto', Helvetica, Arial, sans-serif;
+	font-size: 0.9rem;
+	font-weight: 500;
+	border: none;
+	border-radius: 100px;
+	padding: 0.1rem 0.5rem;
+	background-color: var(--color-gray-light);
+	color: var(--color-gray-dark);
+	cursor: pointer;
+}
+
+button:hover {
+	color: black;
+}
+
+.txt-sm {
+	font-size: 0.8rem;
+	font-weight: 500;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: geometricPrecision;
 }
 
 .red {
 	background-color: var(--color-red);
-	outline-color: var(--color-red);
+	color: white;
 }
-
 .orange {
 	background-color: var(--color-orange);
-	outline-color: var(--color-orange);
+	color: white;
 }
-
 .yellow {
 	background-color: var(--color-yellow);
-	outline-color: var(--color-yellow);
+	color: white;
 }
-
 .green {
 	background-color: var(--color-green);
-	outline-color: var(--color-green);
+	color: white;
 }
-
 .blue {
 	background-color: var(--color-blue);
-	outline-color: var(--color-blue);
+	color: white;
 }
-
 .purple {
 	background-color: var(--color-purple);
-	outline-color: var(--color-purple);
+	color: white;
 }
-
 .brown {
 	background-color: var(--color-brown);
-	outline-color: var(--color-brown);
+	color: white;
 }
-
 .black {
 	background-color: #212121;
-	outline-color: #212121;
+	color: white;
 }
-
 .gray {
 	background-color: var(--color-gray-dark);
-	outline-color: var(--color-gray-dark);
+	color: white;
+}
+.white {
+	background-color: white;
+	color: var(--color-gray-dark);
 }
 
-.white {
-	color: var(--color-gray-dark);
-	border: 1px solid var(--color-gray-light);
-	outline-color: var(--color-blue);
-}
+

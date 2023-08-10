@@ -3,7 +3,7 @@ const dataInJson = `
  {
   "name": "Family Reunion Meal Plan",
   "startDate": "2023-08-05T02:29:55.134Z",
-  "notes": "Everybody bring your own favorite cereals and enough milk for your family's needs.",
+  "notes": "",
   "contributors": [
    {
     "id": "123",
@@ -66,7 +66,7 @@ const dataInJson = `
    },
    {
     "breakfast": {
-     "food": "",
+     "food": "Every man for himself",
      "contributor": ""
     },
     "lunch": {
@@ -103,17 +103,17 @@ const dataInJson = `
    {
     "id": "123",
     "name": "Imani",
-    "color": "red"
+    "color": "orange"
    },
    {
     "id": "124",
     "name": "Camden",
-    "color": "yellow"
+    "color": "brown"
    },
    {
     "id": "125",
     "name": "Julian",
-    "color": "blue"
+    "color": "gray"
    }
   ],
   "days": [
@@ -192,7 +192,7 @@ const dataInJson = `
  },
  {
   "name": "Morgan Hill",
-  "startDate": "2023-08-05T13:07:00.837Z",
+  "startDate": "2023-12-30",
   "notes": "Animi ad quo repellendus sint nulla nihil commodi voluptas maxime. Est eaque illo porro ab. Voluptate enim eveniet et fugit optio. Eveniet exercitationem dignissimos vitae eaque ex quos optio consequatur velit. Eum iste aut fuga voluptatibus molestias vero odio ea eum. Minima perferendis cupiditate.",
   "contributors": [
    {

@@ -13,30 +13,37 @@
 	</head>
 	<body>
 		<header></header>
-		<section id="calendar"></section>
-		<section id="wrapper-notes">
-			<p id="notes"></p>
-			<form id="form-notes" action="" class="hidden">
-				<textarea name="notes" id="ta-notes" rows="6" placeholder="Notes..."></textarea>
-				<div class="form-buttons">
-					<button type="button" id="btn-notes-cancel" class="btn">Cancel</button>
-					<button id="btn-notes-done" class="btn">Done</button>
-				</div>
-			</form>
+
+		<section class="cal">
+			<div class="cal"></div>
+			<div id="add-note">
+				<p class="txt-sm">Add Note</p>
+			</div>
+			<div class="notes">
+				<p class="notes txt-sm"></p>
+				<form class="notes" action="">
+					<textarea name="notes" class="notes" rows="6" placeholder="Notes..."></textarea>
+					<div class="form-buttons">
+						<button type="button" id="btn-notes-cancel" class="btn">Cancel</button>
+						<button id="btn-notes-done" class="btn">Done</button>
+					</div>
+				</form>
+			</div>
 		</section>
-		<section id="inspector">
-			<form id="form-inspector" action="" name="inspector">
+
+		<section class="inspector">
+			<form class="inspector white" action="" name="inspector">
 				<div id="inspector-title">
-					<p>Supper</p>
-					<p>Mon, Aug 7</p>
+					<p id="selected-meal-name">meal name here</p>
+					<p id="selected-date" class="txt-sm">date goes here</p>
 				</div>
-				<div class="wrapper-contributors">
+				<div>
 					<label for="contributors">Contributor:</label>
 					<select name="" id="contributors"></select>
 				</div>
 				<textarea
 					name="food"
-					id="input-food"
+					id="selected-food"
 					cols="30"
 					rows="4"
 					maxlength="100"
