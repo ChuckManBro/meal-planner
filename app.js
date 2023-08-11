@@ -19,14 +19,15 @@ const notesFormText = document.querySelector(`textarea.notes`);
 const btnNotesCancel = document.querySelector(`#btn-notes-cancel`);
 const btnNotesDone = document.querySelector(`#btn-notes-done`);
 const inspectorForm = document.querySelector(`form.inspector`);
-const selectedMealNameEl = document.querySelector(`#selected-meal-name`);
-const selectedDateEl = document.querySelector(`#selected-date`);
+const inspectorMealNameEl = document.querySelector(`#inspector-meal-name`);
+const inspectorDateEl = document.querySelector(`#inspector-date`);
 const contributorsEl = document.querySelector(`#contributors`);
-const selectedFoodEl = document.querySelector(`#selected-food`);
+const inspectorFoodEl = document.querySelector(`#inspector-food`);
 
 // STARTER VARIABLES
 let plan;
-let selectedMeal = {};
+let selectedMeal;
+let selectedMealEl;
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = [
 	'Jan',
@@ -127,6 +128,9 @@ plan.days.forEach((day, dayIndex) => {
 		mealEl.classList.add('meal');
 		mealEl.classList.add('txt-sm');
 
+		// innerText food
+		mealEl.innerText = day[meal].food;
+
 		// Determine color
 		let color;
 		if (day[meal].contributor) {
@@ -134,29 +138,49 @@ plan.days.forEach((day, dayIndex) => {
 		} else {
 			color = 'white';
 		}
-		mealEl.classList.add(color);
+		mealEl.dataset.color = color;
 
-		// Custom properties for targeting changes
+		// Custom properties for selecting and targeting changes
 		mealEl.id = `meal-${mealIndex}`;
-		mealEl.day = dayIndex;
-		mealEl.meal = meal;
-		mealEl.date = `${thisDayName}, ${thisMonthAndDate}`;
+		mealEl.dataset.day = dayIndex;
+		mealEl.dataset.meal = meal;
+		mealEl.dataset.dayName = thisDayName;
+		mealEl.dataset.date = thisMonthAndDate;
+		mealEl.dataset.food = day[meal].food;
 
-		//TODO - Meal click event
+		// Click Events
 		mealEl.addEventListener('click', e => {
 			document.querySelectorAll('.meal').forEach(m => m.classList.remove('selected'));
 			e.target.classList.add('selected');
-			selectedMeal.index = e.target.id;
-			selectedMeal.day = e.target.day;
-			selectedMeal.meal = e.target.meal;
-			selectedMeal.date = e.target.date;
+			selectedMeal = e.target.dataset;
+			selectedMeal.mealElId = e.target.id;
+			selectedMealEl = document.getElementById(e.target.id);
 			mealSelectionChange();
+			inspectorForm.classList.remove('hidden');
 		});
 
-		mealEl.innerText = day[meal].food;
 		dayEl.appendChild(mealEl);
 	}
 });
+
+function mealSelectionChange() {
+	inspectorForm.reset();
+	inspectorForm.dataset.color = selectedMeal.color;
+	inspectorMealNameEl.innerText = selectedMeal.meal;
+	inspectorDateEl.innerText = `${selectedMeal.dayName}, ${selectedMeal.date}`;
+	if (selectedMeal.color === 'white') {
+		document.getElementById('blank-option').selected = 'selected';
+	} else {
+		const selectedOption = document.querySelector(
+			`.contributor-option[data-color="${selectedMeal.color}"]`
+		);
+		selectedOption.selected = 'selected';
+	}
+
+	inspectorFoodEl.innerText = selectedMeal.food;
+
+	// console.log(selectedMeal); //TEST
+}
 
 //TEST Extra Day Blocks
 let extraSpaces = length - plan.days.length;
@@ -214,43 +238,77 @@ btnNotesDone.addEventListener('click', e => {
 renderContributors();
 function renderContributors() {
 	const blankOption = document.createElement('option');
-	blankOption.innerText = '(blank)';
+	blankOption.id = 'blank-option';
+	blankOption.dataset.color = 'white';
+	blankOption.dataset.contributor = '';
+	blankOption.innerText = 'none';
 	contributorsEl.appendChild(blankOption);
 
 	plan.contributors.forEach(contributor => {
 		const contributorOption = document.createElement('option');
-		contributorOption.color = contributor.color;
+		contributorOption.classList.add('contributor-option');
+		contributorOption.dataset.color = contributor.color;
+		contributorOption.dataset.contributor = contributor.id;
 		contributorOption.innerText = contributor.name;
 		contributorsEl.appendChild(contributorOption);
 	});
 }
 contributorsEl.addEventListener('change', e => {
+	// New selection info
 	const options = document.getElementById('contributors').children;
 	const selection = e.target.selectedIndex;
+	// console.log(`Selected Contributor: ${options[selection].dataset.contributor}`); //TEST
+
+	// Set color of self
+	inspectorForm.dataset.color = options[selection].dataset.color;
+
+	// Set color of selected meal in cal
+	document.getElementById(selectedMeal.mealElId).dataset.color = options[selection].dataset.color;
+
+	// Save data
+	plan.days[selectedMeal.day][selectedMeal.meal].contributor =
+		options[selection].dataset.contributor;
+	//TODO - save contributor to database
 });
 
-//TEST - selectedMeal = {index: 'meal-1', day: 0, meal: 'breakfast', date: 'Sat, Aug 5'}
-function mealSelectionChange() {
-	// Set the inspector color
-	let selectedColor;
+// Typing Timer
+let typingTimer;
+let typingTimerActive = false;
+const doneTypingInterval = 4000;
 
-	const selectedContributor = plan.days[selectedMeal.day][selectedMeal.meal].contributor;
+// Food textarea updates while typing
+inspectorFoodEl.addEventListener('input', e => {
+	selectedMealEl.innerText = e.target.value;
+	selectedMealEl.dataset.food = e.target.value;
 
-	if (selectedContributor) {
-		selectedColor = plan.contributors.find(c => c.id === selectedContributor).color;
-		inspectorForm.classList = `inspector ${selectedColor}`;
-	} else {
-		inspectorForm.classList = `inspector white`;
+	// Clear/Start the typingTimer
+	clearTimeout(typingTimer);
+	typingTimer = setTimeout(() => {
+		typingTimerActive = false;
+		saveFood();
+	}, doneTypingInterval);
+	typingTimerActive = true;
+});
+
+//When textarea loses focus, clear typingTimer and save
+inspectorFoodEl.addEventListener('blur', () => {
+	if (typingTimerActive) {
+		saveFood();
+		clearTimeout(typingTimer);
+		typingTimerActive = false;
 	}
+});
 
-	// Set meal name
-	selectedMealNameEl.innerText = selectedMeal.meal;
-
-	// Set date
-	selectedDateEl.innerText = `${selectedMeal.date}`;
-
-	// Set contributor //TODO
-
-	// Set foods
-	selectedFoodEl.innerText = plan.days[selectedMeal.day][selectedMeal.meal].food;
+function saveFood() {
+	plan.days[selectedMeal.day][selectedMeal.meal].food = inspectorFoodEl.value;
+	//TODO - Save food to database here
+	console.log(`SAVE FOOD NOW`); //TEST
 }
+
+//TEST - TEST BUTTON START
+document.getElementById('test-button').addEventListener('click', () => {
+	console.log(`TEST BUTTON CLICK:`);
+	console.log(plan.days[selectedMeal.day][selectedMeal.meal].food);
+	console.log(plan.days[selectedMeal.day][selectedMeal.meal].contributor);
+});
+//TEST - TEST BUTTON END

@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 
 :root {
 	--calendar-columns: 3;
 	--radius-inner: 8px;
 	--radius-outer: 10px;
-	/* --color-white: white; */
 	--color-gray-light: #d5d5d5;
 	--color-gray-dark: #616161;
 	--color-brown: #795548;
@@ -54,45 +53,52 @@ button:hover {
 	text-rendering: geometricPrecision;
 }
 
-.red {
+[data-color='red'] {
 	background-color: var(--color-red);
 	color: white;
 }
-.orange {
+
+[data-color='orange'] {
 	background-color: var(--color-orange);
 	color: white;
 }
-.yellow {
+
+[data-color='yellow'] {
 	background-color: var(--color-yellow);
 	color: white;
 }
-.green {
+
+[data-color='green'] {
 	background-color: var(--color-green);
 	color: white;
 }
-.blue {
+
+[data-color='blue'] {
 	background-color: var(--color-blue);
 	color: white;
 }
-.purple {
+
+[data-color='purple'] {
 	background-color: var(--color-purple);
 	color: white;
 }
-.brown {
+
+[data-color='brown'] {
 	background-color: var(--color-brown);
 	color: white;
 }
-.black {
+
+[data-color='black'] {
 	background-color: #212121;
 	color: white;
 }
-.gray {
+
+[data-color='gray'] {
 	background-color: var(--color-gray-dark);
 	color: white;
 }
-.white {
+
+[data-color='white'] {
 	background-color: white;
 	color: var(--color-gray-dark);
 }
-
-

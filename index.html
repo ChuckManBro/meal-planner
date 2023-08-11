@@ -32,10 +32,10 @@
 		</section>
 
 		<section class="inspector">
-			<form class="inspector white" action="" name="inspector">
+			<form class="inspector hidden" action="" name="inspector">
 				<div id="inspector-title">
-					<p id="selected-meal-name">meal name here</p>
-					<p id="selected-date" class="txt-sm">date goes here</p>
+					<p id="inspector-meal-name"></p>
+					<p id="inspector-date" class="txt-sm"></p>
 				</div>
 				<div>
 					<label for="contributors">Contributor:</label>
@@ -43,14 +43,16 @@
 				</div>
 				<textarea
 					name="food"
-					id="selected-food"
+					id="inspector-food"
 					cols="30"
 					rows="4"
-					maxlength="100"
+					maxlength="120"
 					placeholder="Foods..."
 				></textarea>
 			</form>
 		</section>
+
+		<button id="test-button">Test Button</button>
 
 		<script src="./app.js" type="module"></script>
 	</body>

@@ -66,7 +66,7 @@ const dataInJson = `
    },
    {
     "breakfast": {
-     "food": "Every man for himself",
+     "food": "self-serve",
      "contributor": ""
     },
     "lunch": {
@@ -80,7 +80,7 @@ const dataInJson = `
    },
    {
     "breakfast": {
-     "food": "",
+     "food": "self-serve",
      "contributor": ""
     },
     "lunch": {
