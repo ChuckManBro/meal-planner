@@ -15,10 +15,14 @@
 		<header></header>
 
 		<section class="cal">
+			<div class="legend"></div>
+
 			<div class="cal"></div>
+
 			<div id="add-note">
 				<p class="txt-sm">Add Note</p>
 			</div>
+
 			<div class="notes">
 				<p class="notes txt-sm"></p>
 				<form class="notes" action="">
@@ -32,18 +36,18 @@
 		</section>
 
 		<section class="inspector">
-			<form class="inspector hidden" action="" name="inspector">
-				<div id="inspector-title">
-					<p id="inspector-meal-name"></p>
-					<p id="inspector-date" class="txt-sm"></p>
+			<form id="meal-form" class="hidden" action="" name="meal-form">
+				<div id="meal-form-title">
+					<p id="meal-form-meal-name"></p>
+					<p id="meal-form-date" class="txt-sm"></p>
 				</div>
 				<div>
-					<label for="contributors">Contributor:</label>
-					<select name="" id="contributors"></select>
+					<label for="meal-form-contributors">Contributor:</label>
+					<select name="" id="meal-form-contributors"></select>
 				</div>
 				<textarea
 					name="food"
-					id="inspector-food"
+					id="meal-form-food"
 					cols="30"
 					rows="4"
 					maxlength="120"

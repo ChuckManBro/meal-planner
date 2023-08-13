@@ -3,7 +3,7 @@ const dataInJson = `
  {
   "name": "Family Reunion Meal Plan",
   "startDate": "2023-08-05T02:29:55.134Z",
-  "notes": "",
+  "notes": "Everybody bring your own favorite cereal and milk.",
   "contributors": [
    {
     "id": "123",
@@ -19,6 +19,11 @@ const dataInJson = `
     "id": "125",
     "name": "Becks",
     "color": "purple"
+   },
+   {
+    "id": "126",
+    "name": "Mousers",
+    "color": "orange"
    }
   ],
   "days": [
@@ -60,8 +65,8 @@ const dataInJson = `
      "contributor": "123"
     },
     "supper": {
-     "food": "Spagetti and Meatballs and lots of other really good things that we all like to eat together. The quick brown fox jumps over the lazy dog.",
-     "contributor": "124"
+     "food": "Spagetti and Meatballs",
+     "contributor": "126"
     }
    },
    {
@@ -284,6 +289,57 @@ const dataInJson = `
    }
   ],
   "id": "3"
+ },
+ {
+  "name": "My Blank Meal Plan",
+  "startDate": "2023-08-12",
+  "notes": "",
+  "contributors": [],
+  "days": [
+   {
+    "breakfast": {
+     "food": "",
+     "contributor": ""
+    },
+    "lunch": {
+     "food": "",
+     "contributor": ""
+    },
+    "supper": {
+     "food": "",
+     "contributor": ""
+    }
+   },
+   {
+    "breakfast": {
+     "food": "",
+     "contributor": ""
+    },
+    "lunch": {
+     "food": "",
+     "contributor": ""
+    },
+    "supper": {
+     "food": "",
+     "contributor": ""
+    }
+   },
+   {
+    "breakfast": {
+     "food": "",
+     "contributor": ""
+    },
+    "lunch": {
+     "food": "",
+     "contributor": ""
+    },
+    "supper": {
+     "food": "",
+     "contributor": ""
+    }
+   }
+  ],
+  "id": "4"
  }
 ]
 `;

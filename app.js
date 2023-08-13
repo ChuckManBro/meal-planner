@@ -10,6 +10,7 @@ console.log(new Date(todaysDate))
 
 // DOM ELEMENTS
 const headerEl = document.querySelector(`header`);
+const legendDiv = document.querySelector(`div.legend`);
 const calEl = document.querySelector(`div.cal`);
 const addNoteEl = document.querySelector('#add-note');
 const notesDiv = document.querySelector(`div.notes`);
@@ -18,11 +19,11 @@ const notesForm = document.querySelector(`form.notes`);
 const notesFormText = document.querySelector(`textarea.notes`);
 const btnNotesCancel = document.querySelector(`#btn-notes-cancel`);
 const btnNotesDone = document.querySelector(`#btn-notes-done`);
-const inspectorForm = document.querySelector(`form.inspector`);
-const inspectorMealNameEl = document.querySelector(`#inspector-meal-name`);
-const inspectorDateEl = document.querySelector(`#inspector-date`);
-const contributorsEl = document.querySelector(`#contributors`);
-const inspectorFoodEl = document.querySelector(`#inspector-food`);
+const mealForm = document.querySelector(`#meal-form`);
+const mealFormMealNameEl = document.querySelector(`#meal-form-meal-name`);
+const mealFormDateEl = document.querySelector(`#meal-form-date`);
+const mealFormContributorsEl = document.querySelector(`#meal-form-contributors`);
+const mealFormFoodEl = document.querySelector(`#meal-form-food`);
 
 // STARTER VARIABLES
 let plan;
@@ -79,8 +80,30 @@ plan = mealPlans[0];
 console.log(`There are plans ${mealPlans.length} in the test database.`);
 console.log(`${plan.name} has ${plan.days.length} days scheduled.`);
 
-// Set calendar name in header
+//***** HEADER *****
 headerEl.innerText = plan.name;
+
+//***** LEGEND *****
+plan.contributors.forEach(c => {
+	const newLegend = document.createElement('p');
+	newLegend.classList = 'legend-contributor txt-sm';
+	newLegend.dataset.color = c.color;
+	newLegend.innerText = c.name;
+	legendDiv.appendChild(newLegend);
+});
+
+// 'Add Contributor' button at end of legend list
+const legendContributorAddEl = document.createElement('p');
+legendContributorAddEl.classList = 'legend-contributor txt-sm';
+legendContributorAddEl.dataset.color = 'white';
+if (plan.contributors[0]) {
+	legendContributorAddEl.innerText = '+';
+} else {
+	legendContributorAddEl.innerText = 'Add Contributor';
+}
+legendDiv.appendChild(legendContributorAddEl);
+
+//***** CALENDAR *****
 
 // Set calendar's CSS Grid to max of 7 columns
 const length = plan.days.length;
@@ -156,7 +179,7 @@ plan.days.forEach((day, dayIndex) => {
 			selectedMeal.mealElId = e.target.id;
 			selectedMealEl = document.getElementById(e.target.id);
 			mealSelectionChange();
-			inspectorForm.classList.remove('hidden');
+			mealForm.classList.remove('hidden');
 		});
 
 		dayEl.appendChild(mealEl);
@@ -164,10 +187,10 @@ plan.days.forEach((day, dayIndex) => {
 });
 
 function mealSelectionChange() {
-	inspectorForm.reset();
-	inspectorForm.dataset.color = selectedMeal.color;
-	inspectorMealNameEl.innerText = selectedMeal.meal;
-	inspectorDateEl.innerText = `${selectedMeal.dayName}, ${selectedMeal.date}`;
+	mealForm.reset();
+	mealForm.dataset.color = selectedMeal.color;
+	mealFormMealNameEl.innerText = selectedMeal.meal;
+	mealFormDateEl.innerText = `${selectedMeal.dayName}, ${selectedMeal.date}`;
 	if (selectedMeal.color === 'white') {
 		document.getElementById('blank-option').selected = 'selected';
 	} else {
@@ -177,7 +200,7 @@ function mealSelectionChange() {
 		selectedOption.selected = 'selected';
 	}
 
-	inspectorFoodEl.innerText = selectedMeal.food;
+	mealFormFoodEl.innerText = selectedMeal.food;
 
 	// console.log(selectedMeal); //TEST
 }
@@ -191,19 +214,23 @@ for (let i = extraSpaces; i > 0; i--) {
 	calEl.appendChild(extraBlock);
 }
 
-// NOTES
-// Render Notes
-if (plan.notes) {
-	notesEl.innerText = `Notes:\n${plan.notes}`;
-	addNoteEl.classList.add('hidden'); // 'Add Note' hidden
-	notesDiv.classList.remove('hidden'); // notes div visible
-	notesEl.classList.remove('hidden'); // notes element visible
-	notesForm.classList.add('hidden'); // notes form hidden
-} else {
-	addNoteEl.classList.remove('hidden'); // 'Add Note' visible
-	notesDiv.classList.add('hidden'); // notes div hidden
-	notesEl.classList.add('hidden'); // notes element hidden
-	notesForm.classList.remove('hidden'); // notes form visible
+//***** NOTES *****
+
+renderNotes();
+
+function renderNotes() {
+	if (plan.notes) {
+		notesEl.innerText = `Notes:\n${plan.notes}`;
+		addNoteEl.classList.add('hidden'); // 'Add Note' hidden
+		notesDiv.classList.remove('hidden'); // notes div visible
+		notesEl.classList.remove('hidden'); // notes element visible
+		notesForm.classList.add('hidden'); // notes form hidden
+	} else {
+		addNoteEl.classList.remove('hidden'); // 'Add Note' visible
+		notesDiv.classList.add('hidden'); // notes div hidden
+		notesEl.classList.add('hidden'); // notes element hidden
+		notesForm.classList.remove('hidden'); // notes form visible
+	}
 }
 
 addNoteEl.addEventListener('click', () => {
@@ -212,37 +239,37 @@ addNoteEl.addEventListener('click', () => {
 	notesFormText.focus();
 });
 
-function toggleNotesEdit() {
-	notesEl.classList.toggle('hidden');
-	notesForm.classList.toggle('hidden');
-}
-
 notesEl.addEventListener('click', () => {
-	notesForm.reset();
 	notesFormText.innerText = plan.notes;
-	toggleNotesEdit();
+	notesEl.classList.add('hidden');
+	notesForm.classList.remove('hidden');
 	notesFormText.focus();
 	notesFormText.selectionStart = notesFormText.value.length;
 });
 
-btnNotesCancel.addEventListener('click', toggleNotesEdit);
+btnNotesCancel.addEventListener('click', () => {
+	notesForm.reset();
+	renderNotes()
+});
 
 btnNotesDone.addEventListener('click', e => {
 	e.preventDefault();
-	plan.notes = notesFormText.value; //TODO - PUT to database
-	notesEl.innerText = `Notes:\n${notesFormText.value}`;
-	toggleNotesEdit();
+	//TODO - PUT notes to database
+	plan.notes = notesFormText.value;
+	renderNotes();
 });
 
-//Inspector Contributors
+//***** INSPECTOR *****
+
+// Contributors drop-down selector
 renderContributors();
 function renderContributors() {
-	const blankOption = document.createElement('option');
-	blankOption.id = 'blank-option';
-	blankOption.dataset.color = 'white';
-	blankOption.dataset.contributor = '';
-	blankOption.innerText = 'none';
-	contributorsEl.appendChild(blankOption);
+	const noneOption = document.createElement('option');
+	noneOption.id = 'blank-option';
+	noneOption.dataset.color = 'white';
+	noneOption.dataset.contributor = '';
+	noneOption.innerText = 'none';
+	mealFormContributorsEl.appendChild(noneOption);
 
 	plan.contributors.forEach(contributor => {
 		const contributorOption = document.createElement('option');
@@ -250,17 +277,18 @@ function renderContributors() {
 		contributorOption.dataset.color = contributor.color;
 		contributorOption.dataset.contributor = contributor.id;
 		contributorOption.innerText = contributor.name;
-		contributorsEl.appendChild(contributorOption);
+		mealFormContributorsEl.appendChild(contributorOption);
 	});
 }
-contributorsEl.addEventListener('change', e => {
+
+mealFormContributorsEl.addEventListener('change', e => {
 	// New selection info
-	const options = document.getElementById('contributors').children;
+	const options = document.getElementById('meal-form-contributors').children;
 	const selection = e.target.selectedIndex;
 	// console.log(`Selected Contributor: ${options[selection].dataset.contributor}`); //TEST
 
 	// Set color of self
-	inspectorForm.dataset.color = options[selection].dataset.color;
+	mealForm.dataset.color = options[selection].dataset.color;
 
 	// Set color of selected meal in cal
 	document.getElementById(selectedMeal.mealElId).dataset.color = options[selection].dataset.color;
@@ -268,7 +296,7 @@ contributorsEl.addEventListener('change', e => {
 	// Save data
 	plan.days[selectedMeal.day][selectedMeal.meal].contributor =
 		options[selection].dataset.contributor;
-	//TODO - save contributor to database
+	//TODO - save  meal-contributor to database
 });
 
 // Typing Timer
@@ -277,7 +305,7 @@ let typingTimerActive = false;
 const doneTypingInterval = 4000;
 
 // Food textarea updates while typing
-inspectorFoodEl.addEventListener('input', e => {
+mealFormFoodEl.addEventListener('input', e => {
 	selectedMealEl.innerText = e.target.value;
 	selectedMealEl.dataset.food = e.target.value;
 
@@ -291,7 +319,7 @@ inspectorFoodEl.addEventListener('input', e => {
 });
 
 //When textarea loses focus, clear typingTimer and save
-inspectorFoodEl.addEventListener('blur', () => {
+mealFormFoodEl.addEventListener('blur', () => {
 	if (typingTimerActive) {
 		saveFood();
 		clearTimeout(typingTimer);
@@ -300,7 +328,7 @@ inspectorFoodEl.addEventListener('blur', () => {
 });
 
 function saveFood() {
-	plan.days[selectedMeal.day][selectedMeal.meal].food = inspectorFoodEl.value;
+	plan.days[selectedMeal.day][selectedMeal.meal].food = mealFormFoodEl.value;
 	//TODO - Save food to database here
 	console.log(`SAVE FOOD NOW`); //TEST
 }
@@ -308,7 +336,5 @@ function saveFood() {
 //TEST - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
-	console.log(plan.days[selectedMeal.day][selectedMeal.meal].food);
-	console.log(plan.days[selectedMeal.day][selectedMeal.meal].contributor);
 });
 //TEST - TEST BUTTON END

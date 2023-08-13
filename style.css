@@ -14,16 +14,26 @@ header {
 	padding: 4px;
 }
 
-/***** CALENDAR *****/
-section.cal {
-	background-color: var(--color-gray-dark);
+/***** LEGEND *****/
+
+div.legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.2rem;
 }
+
+.legend-contributor {
+	padding: 0 0.5rem;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+/***** CALENDAR *****/
 
 div.cal {
 	display: grid;
 	grid-template-columns: repeat(var(--calendar-columns), 1fr);
 	gap: 1px;
-	margin-top: 4px;
 }
 
 .day {
@@ -55,15 +65,11 @@ div.cal {
 	padding: 2px 6px;
 	cursor: pointer;
 	word-wrap: break-word;
-	max-height: calc(3rem + 4px);
+	height: calc(3rem + 4px);
 	overflow: hidden;
 }
 
-/* FIXME */
-/* .meal.white {
-	border: 1px solid var(--color-gray-light);
-} */
-[data-color='white'] {
+.meal[data-color='white'] {
 	border: 1px solid var(--color-gray-light);
 }
 
@@ -102,15 +108,10 @@ textarea {
 	display: flex;
 	justify-content: end;
 	cursor: pointer;
-	padding: 4px 8px;
 }
 
 #add-note p {
 	color: var(--color-gray-light);
-}
-
-div.notes {
-	padding: 4px 8px 8px;
 }
 
 p.notes {
@@ -137,6 +138,7 @@ textarea.notes {
 }
 
 /***** INSPECTOR *****/
+
 section.inspector {
 	flex-grow: 1;
 	background-color: var(--color-gray-light);
@@ -145,7 +147,9 @@ section.inspector {
 	justify-content: center;
 }
 
-form.inspector {
+/***** MEAL FORM *****/
+
+#meal-form {
 	width: calc(100vw - 8px);
 	max-width: 40ch;
 	/* margin: 1.5rem 0; */
@@ -156,24 +160,17 @@ form.inspector {
 	padding: 20px;
 }
 
-form.inspector[data-color='white'] {
-	/* outline: 1px solid var(--color-gray-dark); */
+#meal-form[data-color='white'],
+#meal-form[data-color='white'] textarea,
+#meal-form[data-color='white'] select {
 	outline: 1px solid #9e9e9e;
 }
 
-form.inspector[data-color='white'] textarea {
-	outline: 1px solid #9e9e9e;
-}
-
-form.inspector[data-color='white'] select {
-	outline: 1px solid #9e9e9e;
-}
-
-#inspector-title p {
+#meal-form-title p {
 	text-align: center;
 }
 
-#inspector-meal-name {
+#meal-form-meal-name {
 	text-transform: uppercase;
 	font-size: 1rem;
 	font-weight: 500;
