@@ -36,7 +36,13 @@
 		</section>
 
 		<section class="inspector">
-			<div class="cont-detail hidden">CONTRIBUTOR DETAILS</div>
+			<form id="cont-form" class="hidden">
+				<header id="cont-form-name"></header>
+				<div id="cont-form-inputs" class="hidden">
+					<input type="text" name="name" id="cont-form-name-input" maxlength="20" />
+					<select name="Color" id="cont-form-color-select"></select>
+				</div>
+			</form>
 
 			<form id="new-cont-form" class="hidden" action="">
 				<header>New Contributor</header>

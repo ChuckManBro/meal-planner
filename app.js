@@ -10,7 +10,9 @@ console.log(new Date(todaysDate))
 
 // DOM ELEMENTS
 const appHeaderEl = document.querySelector(`#app-header`);
+
 const legendDiv = document.querySelector(`div.legend`);
+
 const calEl = document.querySelector(`div.cal`);
 const addNoteEl = document.querySelector('#add-note');
 const notesDiv = document.querySelector(`div.notes`);
@@ -19,11 +21,19 @@ const notesForm = document.querySelector(`form.notes`);
 const notesFormText = document.querySelector(`textarea.notes`);
 const btnNotesCancel = document.querySelector(`#btn-notes-cancel`);
 const btnNotesDone = document.querySelector(`#btn-notes-done`);
+
+const contForm = document.querySelector(`#cont-form`);
+const contFormName = document.querySelector(`#cont-form-name`);
+const contFormInputs = document.querySelector(`#cont-form-inputs`);
+const contFormNameInput = document.querySelector(`#cont-form-name-input`);
+const contFormColorSelect = document.querySelector(`#cont-form-color-select`);
+
 const newContForm = document.querySelector(`#new-cont-form`);
 const newName = document.querySelector(`#new-name`);
 const newContColors = document.querySelector(`#new-cont-form-colors`);
 const btnNewContCancel = document.querySelector(`#btn-new-cancel`);
 const btnNewContAdd = document.querySelector(`#btn-new-add`);
+
 const mealForm = document.querySelector(`#meal-form`);
 const mealFormMealNameEl = document.querySelector(`#meal-form-meal-name`);
 const mealFormDateEl = document.querySelector(`#meal-form-date`);
@@ -60,6 +70,23 @@ const colorOptions = [
 	'gray',
 	'black',
 ];
+
+// TYPING TIMER
+let typingTimer;
+let typingTimerActive = false;
+const doneTypingInterval = 4000;
+
+// REUSABLE FUNCTIONS
+function availableColors() {
+	let used = [];
+	plan.contributors.forEach(c => used.push(c.color));
+	return colorOptions.filter(c => !used.includes(c));
+}
+
+function doneTyping(next) {
+	typingTimerActive = false;
+	next();
+}
 
 // MOCKAPI FETCH for individual meal plan
 function getMealPlan(id) {
@@ -106,35 +133,37 @@ renderLegend();
 function renderLegend() {
 	legendDiv.innerHTML = '';
 
-	plan.contributors.forEach(c => {
+	plan.contributors.forEach((c, idx) => {
 		const newLegend = document.createElement('p');
 		newLegend.classList = 'legend-contributor txt-sm';
+		newLegend.dataset.arrIdx = idx;
 		newLegend.dataset.color = c.color;
 		newLegend.innerText = c.name;
+		newLegend.addEventListener('click', legendContClick);
 		legendDiv.appendChild(newLegend);
 	});
+}
 
-	// 'Add Contributor' button at end of legend list
-	if (plan.contributors.length < colorOptions.length) {
-		const newAddEl = document.createElement('p');
-		newAddEl.classList = 'legend-contributor txt-sm';
-		newAddEl.dataset.color = 'white';
+// 'Add Contributor' button at end of legend list
+if (plan.contributors.length < colorOptions.length) {
+	const newAddEl = document.createElement('p');
+	newAddEl.classList = 'legend-contributor txt-sm';
+	newAddEl.dataset.color = 'white';
 
-		if (plan.contributors.length < 1) {
-			newAddEl.innerText = 'Add Contributor';
-		} else {
-			newAddEl.innerText = '+';
-		}
-
-		newAddEl.addEventListener('click', () => {
-			newContForm.reset();
-			renderColorOptions();
-			newContForm.classList.remove('hidden');
-			newName.focus();
-		});
-
-		legendDiv.appendChild(newAddEl);
+	if (plan.contributors.length < 1) {
+		newAddEl.innerText = 'Add Contributor';
+	} else {
+		newAddEl.innerText = '+';
 	}
+
+	newAddEl.addEventListener('click', () => {
+		newContForm.reset();
+		renderNewColorOptions();
+		newContForm.classList.remove('hidden');
+		newName.focus();
+	});
+
+	legendDiv.appendChild(newAddEl);
 }
 
 //***** CALENDAR *****
@@ -295,19 +324,84 @@ btnNotesDone.addEventListener('click', e => {
 
 //***** INSPECTOR *****
 
+//***** CONT-FORM *****
+
+function legendContClick(e) {
+	contForm.dataset.color = e.target.dataset.color;
+	contForm.dataset.arrIdx = e.target.dataset.arrIdx;
+	contFormName.innerText = e.target.innerText;
+	contFormColorSelect.innerHTML = '';
+	const colorOption = document.createElement('option');
+	colorOption.innerText = e.target.dataset.color;
+	contFormColorSelect.appendChild(colorOption);
+	renderContColorOptions();
+	contFormName.classList.remove('hidden'); //reveal name
+	contFormInputs.classList.add('hidden'); //hide inputs
+	contForm.classList.remove('hidden'); //reveal form
+}
+
+function renderContColorOptions() {
+	availableColors().forEach(c => {
+		const newOption = document.createElement('option');
+		newOption.innerText = c;
+		contFormColorSelect.appendChild(newOption);
+	});
+}
+
+contFormName.addEventListener('click', e => {
+	contFormNameInput.value = e.target.innerText;
+	e.target.classList.add('hidden'); //hide name
+	contFormInputs.classList.remove('hidden'); //reveal inputs
+	contFormNameInput.focus();
+});
+
+contFormNameInput.addEventListener('input', event => {
+	// Update name in the legend
+	document.querySelectorAll('.legend-contributor')[contForm.dataset.arrIdx].innerText =
+		event.target.value;
+
+	// Clear/Start the typingTimer
+	clearTimeout(typingTimer);
+	typingTimer = setTimeout(doneTyping, doneTypingInterval, saveName);
+	typingTimerActive = true;
+});
+
+function saveName() {
+	// Update local object data
+	plan.contributors[contForm.dataset.arrIdx].name = contFormNameInput.value;
+	//TODO - PUT name change to database
+	console.log('NAME SAVED'); //TEST
+}
+
+//When name input loses focus, clear typingTimer and save
+contFormNameInput.addEventListener('blur', () => {
+	if (typingTimerActive) {
+		saveName();
+		clearTimeout(typingTimer);
+		typingTimerActive = false;
+	}
+});
+
+contFormColorSelect.addEventListener('change', event => {
+	// Update color of all this contributor's cells
+	document
+		.querySelectorAll(`[data-color="${contForm.dataset.color}"]`)
+		.forEach(cell => (cell.dataset.color = event.target.value));
+
+	// Update local object data
+	plan.contributors[contForm.dataset.arrIdx].color = event.target.value;
+
+	//TODO - PUT color change to database
+});
+
 //***** NEW-CONT-FORM *****
 
-function renderColorOptions() {
+function renderNewColorOptions() {
 	newContColors.innerHTML = '';
-	let colorsUsed = [];
 
-	plan.contributors.forEach(c => colorsUsed.push(c.color));
+	newContForm.dataset.color = availableColors()[0];
 
-	const availableColors = colorOptions.filter(c => !colorsUsed.includes(c));
-
-	newContForm.dataset.color = availableColors[0];
-
-	availableColors.forEach(c => {
+	availableColors().forEach(c => {
 		const newOption = document.createElement('option');
 		newOption.innerText = c;
 		newContColors.appendChild(newOption);
@@ -376,11 +470,6 @@ mealFormContributorsEl.addEventListener('change', e => {
 	//TODO - save  meal-contributor to database
 });
 
-// Typing Timer
-let typingTimer;
-let typingTimerActive = false;
-const doneTypingInterval = 4000;
-
 // Food textarea updates while typing
 mealFormFoodEl.addEventListener('input', e => {
 	selectedMealEl.innerText = e.target.value;
@@ -388,10 +477,7 @@ mealFormFoodEl.addEventListener('input', e => {
 
 	// Clear/Start the typingTimer
 	clearTimeout(typingTimer);
-	typingTimer = setTimeout(() => {
-		typingTimerActive = false;
-		saveFood();
-	}, doneTypingInterval);
+	typingTimer = setTimeout(doneTyping, doneTypingInterval, saveFood);
 	typingTimerActive = true;
 });
 
@@ -407,12 +493,12 @@ mealFormFoodEl.addEventListener('blur', () => {
 function saveFood() {
 	plan.days[selectedMeal.day][selectedMeal.meal].food = mealFormFoodEl.value;
 	//TODO - Save food to database here
-	console.log(`SAVE FOOD NOW`); //TEST
+	console.log(`FOOD SAVED`); //TEST
 }
 
 //TEST - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
-	console.log(plan.contributors[plan.contributors.length - 1]);
+	console.log(plan.contributors);
 });
 //TEST - TEST BUTTON END

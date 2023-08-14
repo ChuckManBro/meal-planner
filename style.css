@@ -188,6 +188,11 @@ input[type='text'] {
 	margin-top: 4px;
 }
 
+/***** CONT-FORM *****/
+#cont-form-name {
+	cursor: pointer;
+}
+
 /* TEST */
 #test-button {
 	position: fixed;
