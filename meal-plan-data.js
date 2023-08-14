@@ -108,17 +108,47 @@ const dataInJson = `
    {
     "id": "123",
     "name": "Imani",
-    "color": "orange"
+    "color": "red"
    },
    {
     "id": "124",
     "name": "Camden",
-    "color": "brown"
+    "color": "orange"
    },
    {
     "id": "125",
     "name": "Julian",
+    "color": "yellow"
+   },
+   {
+    "id": "126",
+    "name": "Bobby",
+    "color": "green"
+   },
+   {
+    "id": "127",
+    "name": "Parker",
+    "color": "blue"
+   },
+   {
+    "id": "128",
+    "name": "Humphrey",
+    "color": "purple"
+   },
+   {
+    "id": "129",
+    "name": "Sam",
+    "color": "brown"
+   },
+   {
+    "id": "130",
+    "name": "Joe",
     "color": "gray"
+   },
+   {
+    "id": "131",
+    "name": "Moriarti",
+    "color": "black"
    }
   ],
   "days": [
@@ -162,20 +192,6 @@ const dataInJson = `
     "supper": {
      "food": "lion",
      "contributor": "124"
-    }
-   },
-   {
-    "breakfast": {
-     "food": "",
-     "contributor": ""
-    },
-    "lunch": {
-     "food": "",
-     "contributor": ""
-    },
-    "supper": {
-     "food": "",
-     "contributor": ""
     }
    },
    {

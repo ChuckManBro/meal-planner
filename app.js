@@ -9,7 +9,7 @@ console.log(new Date(todaysDate))
  */
 
 // DOM ELEMENTS
-const headerEl = document.querySelector(`header`);
+const appHeaderEl = document.querySelector(`#app-header`);
 const legendDiv = document.querySelector(`div.legend`);
 const calEl = document.querySelector(`div.cal`);
 const addNoteEl = document.querySelector('#add-note');
@@ -19,6 +19,11 @@ const notesForm = document.querySelector(`form.notes`);
 const notesFormText = document.querySelector(`textarea.notes`);
 const btnNotesCancel = document.querySelector(`#btn-notes-cancel`);
 const btnNotesDone = document.querySelector(`#btn-notes-done`);
+const newContForm = document.querySelector(`#new-cont-form`);
+const newName = document.querySelector(`#new-name`);
+const newContColors = document.querySelector(`#new-cont-form-colors`);
+const btnNewContCancel = document.querySelector(`#btn-new-cancel`);
+const btnNewContAdd = document.querySelector(`#btn-new-add`);
 const mealForm = document.querySelector(`#meal-form`);
 const mealFormMealNameEl = document.querySelector(`#meal-form-meal-name`);
 const mealFormDateEl = document.querySelector(`#meal-form-date`);
@@ -43,6 +48,17 @@ const monthNames = [
 	'Oct',
 	'Nov',
 	'Dec',
+];
+const colorOptions = [
+	'red',
+	'orange',
+	'yellow',
+	'green',
+	'blue',
+	'purple',
+	'brown',
+	'gray',
+	'black',
 ];
 
 // MOCKAPI FETCH for individual meal plan
@@ -81,27 +97,45 @@ console.log(`There are plans ${mealPlans.length} in the test database.`);
 console.log(`${plan.name} has ${plan.days.length} days scheduled.`);
 
 //***** HEADER *****
-headerEl.innerText = plan.name;
+appHeaderEl.innerText = plan.name;
 
 //***** LEGEND *****
-plan.contributors.forEach(c => {
-	const newLegend = document.createElement('p');
-	newLegend.classList = 'legend-contributor txt-sm';
-	newLegend.dataset.color = c.color;
-	newLegend.innerText = c.name;
-	legendDiv.appendChild(newLegend);
-});
 
-// 'Add Contributor' button at end of legend list
-const legendContributorAddEl = document.createElement('p');
-legendContributorAddEl.classList = 'legend-contributor txt-sm';
-legendContributorAddEl.dataset.color = 'white';
-if (plan.contributors[0]) {
-	legendContributorAddEl.innerText = '+';
-} else {
-	legendContributorAddEl.innerText = 'Add Contributor';
+renderLegend();
+
+function renderLegend() {
+	legendDiv.innerHTML = '';
+
+	plan.contributors.forEach(c => {
+		const newLegend = document.createElement('p');
+		newLegend.classList = 'legend-contributor txt-sm';
+		newLegend.dataset.color = c.color;
+		newLegend.innerText = c.name;
+		legendDiv.appendChild(newLegend);
+	});
+
+	// 'Add Contributor' button at end of legend list
+	if (plan.contributors.length < colorOptions.length) {
+		const newAddEl = document.createElement('p');
+		newAddEl.classList = 'legend-contributor txt-sm';
+		newAddEl.dataset.color = 'white';
+
+		if (plan.contributors.length < 1) {
+			newAddEl.innerText = 'Add Contributor';
+		} else {
+			newAddEl.innerText = '+';
+		}
+
+		newAddEl.addEventListener('click', () => {
+			newContForm.reset();
+			renderColorOptions();
+			newContForm.classList.remove('hidden');
+			newName.focus();
+		});
+
+		legendDiv.appendChild(newAddEl);
+	}
 }
-legendDiv.appendChild(legendContributorAddEl);
 
 //***** CALENDAR *****
 
@@ -249,7 +283,7 @@ notesEl.addEventListener('click', () => {
 
 btnNotesCancel.addEventListener('click', () => {
 	notesForm.reset();
-	renderNotes()
+	renderNotes();
 });
 
 btnNotesDone.addEventListener('click', e => {
@@ -260,6 +294,49 @@ btnNotesDone.addEventListener('click', e => {
 });
 
 //***** INSPECTOR *****
+
+//***** NEW-CONT-FORM *****
+
+function renderColorOptions() {
+	newContColors.innerHTML = '';
+	let colorsUsed = [];
+
+	plan.contributors.forEach(c => colorsUsed.push(c.color));
+
+	const availableColors = colorOptions.filter(c => !colorsUsed.includes(c));
+
+	newContForm.dataset.color = availableColors[0];
+
+	availableColors.forEach(c => {
+		const newOption = document.createElement('option');
+		newOption.innerText = c;
+		newContColors.appendChild(newOption);
+	});
+}
+
+newContColors.addEventListener('change', e => {
+	newContForm.dataset.color = e.target.value;
+});
+
+btnNewContCancel.addEventListener('click', () => newContForm.classList.add('hidden'));
+
+btnNewContAdd.addEventListener('click', e => {
+	e.preventDefault();
+
+	plan.contributors.push({
+		id: new Date().valueOf(),
+		name: newName.value ? newName.value : `Contributor ${plan.contributors.length + 1}`,
+		color: newContColors.value,
+	});
+
+	//TODO - PUT New Contributor to database
+
+	newContForm.classList.add('hidden');
+
+	renderLegend();
+});
+
+//***** MEAL-FORM *****
 
 // Contributors drop-down selector
 renderContributors();
@@ -336,5 +413,6 @@ function saveFood() {
 //TEST - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
+	console.log(plan.contributors[plan.contributors.length - 1]);
 });
 //TEST - TEST BUTTON END

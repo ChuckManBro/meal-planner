@@ -12,7 +12,7 @@
 		<title>Meal Planner</title>
 	</head>
 	<body>
-		<header></header>
+		<header id="app-header"></header>
 
 		<section class="cal">
 			<div class="legend"></div>
@@ -28,19 +28,37 @@
 				<form class="notes" action="">
 					<textarea name="notes" class="notes" rows="6" placeholder="Notes..."></textarea>
 					<div class="form-buttons">
-						<button type="button" id="btn-notes-cancel" class="btn">Cancel</button>
-						<button id="btn-notes-done" class="btn">Done</button>
+						<button type="button" id="btn-notes-cancel">Cancel</button>
+						<button id="btn-notes-done">Done</button>
 					</div>
 				</form>
 			</div>
 		</section>
 
 		<section class="inspector">
+			<div class="cont-detail hidden">CONTRIBUTOR DETAILS</div>
+
+			<form id="new-cont-form" class="hidden" action="">
+				<header>New Contributor</header>
+				<div>
+					<label for="new-name">Name:</label>
+					<input type="text" name="name" id="new-name" maxlength="20" autocomplete="off" />
+				</div>
+				<div>
+					<label for="new-cont-form-colors">Color:</label>
+					<select name="new-cont-form-colors" id="new-cont-form-colors"></select>
+				</div>
+				<div class="form-buttons">
+					<button type="button" id="btn-new-cancel">Cancel</button>
+					<button id="btn-new-add">Add</button>
+				</div>
+			</form>
+
 			<form id="meal-form" class="hidden" action="" name="meal-form">
-				<div id="meal-form-title">
+				<header>
 					<p id="meal-form-meal-name"></p>
 					<p id="meal-form-date" class="txt-sm"></p>
-				</div>
+				</header>
 				<div>
 					<label for="meal-form-contributors">Contributor:</label>
 					<select name="" id="meal-form-contributors"></select>
@@ -57,7 +75,6 @@
 		</section>
 
 		<button id="test-button">Test Button</button>
-
 		<script src="./app.js" type="module"></script>
 	</body>
 </html>
