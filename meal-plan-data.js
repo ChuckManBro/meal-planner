@@ -12,7 +12,7 @@ const dataInJson = `
    },
    {
     "id": "124",
-    "name": "Chuck & Missy",
+    "name": "Mousers",
     "color": "green"
    },
    {
@@ -22,8 +22,8 @@ const dataInJson = `
    },
    {
     "id": "126",
-    "name": "Mousers",
-    "color": "orange"
+    "name": "Chuck & Missy",
+    "color": "red"
    }
   ],
   "days": [
@@ -57,15 +57,15 @@ const dataInJson = `
    },
    {
     "breakfast": {
-     "food": "lion",
-     "contributor": "125"
+     "food": "self-serve",
+     "contributor": ""
     },
     "lunch": {
      "food": "fish",
      "contributor": "123"
     },
     "supper": {
-     "food": "Spagetti and Meatballs",
+     "food": "Spaghetti and Meatballs",
      "contributor": "126"
     }
    },
@@ -307,11 +307,39 @@ const dataInJson = `
   "id": "3"
  },
  {
-  "name": "My Blank Meal Plan",
+  "name": "My Fancy Blank Meal Plan",
   "startDate": "2023-08-12",
   "notes": "",
   "contributors": [],
   "days": [
+   {
+    "breakfast": {
+     "food": "",
+     "contributor": ""
+    },
+    "lunch": {
+     "food": "",
+     "contributor": ""
+    },
+    "supper": {
+     "food": "",
+     "contributor": ""
+    }
+   },
+   {
+    "breakfast": {
+     "food": "",
+     "contributor": ""
+    },
+    "lunch": {
+     "food": "",
+     "contributor": ""
+    },
+    "supper": {
+     "food": "",
+     "contributor": ""
+    }
+   },
    {
     "breakfast": {
      "food": "",

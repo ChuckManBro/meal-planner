@@ -27,6 +27,7 @@ const contFormName = document.querySelector(`#cont-form-name`);
 const contFormInputs = document.querySelector(`#cont-form-inputs`);
 const contFormNameInput = document.querySelector(`#cont-form-name-input`);
 const contFormColorSelect = document.querySelector(`#cont-form-color-select`);
+const contFormList = document.querySelector(`#cont-form-list`);
 
 const newContForm = document.querySelector(`#new-cont-form`);
 const newName = document.querySelector(`#new-name`);
@@ -117,7 +118,7 @@ function getMealPlan(id) {
 
 // LOCAL TESTER DATA
 import { mealPlans } from './meal-plan-data.js';
-plan = mealPlans[0];
+plan = mealPlans[3];
 
 //TEST - Examples
 console.log(`There are plans ${mealPlans.length} in the test database.`);
@@ -138,32 +139,32 @@ function renderLegend() {
 		newLegend.classList = 'legend-contributor txt-sm';
 		newLegend.dataset.arrIdx = idx;
 		newLegend.dataset.color = c.color;
-		newLegend.innerText = c.name;
+		newLegend.innerText = c.name ? c.name : c.color;
 		newLegend.addEventListener('click', legendContClick);
 		legendDiv.appendChild(newLegend);
 	});
-}
 
-// 'Add Contributor' button at end of legend list
-if (plan.contributors.length < colorOptions.length) {
-	const newAddEl = document.createElement('p');
-	newAddEl.classList = 'legend-contributor txt-sm';
-	newAddEl.dataset.color = 'white';
+	// 'Add Contributor' button at end of legend list
+	if (plan.contributors.length < colorOptions.length) {
+		const newAddEl = document.createElement('p');
+		newAddEl.classList = 'legend-contributor txt-sm';
+		newAddEl.dataset.color = 'white';
 
-	if (plan.contributors.length < 1) {
-		newAddEl.innerText = 'Add Contributor';
-	} else {
-		newAddEl.innerText = '+';
+		if (plan.contributors.length < 1) {
+			newAddEl.innerText = 'Add Contributor';
+		} else {
+			newAddEl.innerText = '+';
+		}
+
+		newAddEl.addEventListener('click', () => {
+			newContForm.reset();
+			renderNewColorOptions();
+			changeInspectorView('new-cont');
+			newName.focus();
+		});
+
+		legendDiv.appendChild(newAddEl);
 	}
-
-	newAddEl.addEventListener('click', () => {
-		newContForm.reset();
-		renderNewColorOptions();
-		newContForm.classList.remove('hidden');
-		newName.focus();
-	});
-
-	legendDiv.appendChild(newAddEl);
 }
 
 //***** CALENDAR *****
@@ -236,13 +237,11 @@ plan.days.forEach((day, dayIndex) => {
 
 		// Click Events
 		mealEl.addEventListener('click', e => {
-			document.querySelectorAll('.meal').forEach(m => m.classList.remove('selected'));
-			e.target.classList.add('selected');
 			selectedMeal = e.target.dataset;
 			selectedMeal.mealElId = e.target.id;
 			selectedMealEl = document.getElementById(e.target.id);
 			mealSelectionChange();
-			mealForm.classList.remove('hidden');
+			changeInspectorView('meal');
 		});
 
 		dayEl.appendChild(mealEl);
@@ -251,11 +250,12 @@ plan.days.forEach((day, dayIndex) => {
 
 function mealSelectionChange() {
 	mealForm.reset();
+	renderContributors();
 	mealForm.dataset.color = selectedMeal.color;
 	mealFormMealNameEl.innerText = selectedMeal.meal;
 	mealFormDateEl.innerText = `${selectedMeal.dayName}, ${selectedMeal.date}`;
 	if (selectedMeal.color === 'white') {
-		document.getElementById('blank-option').selected = 'selected';
+		document.getElementById('none-option').selected = 'selected';
 	} else {
 		const selectedOption = document.querySelector(
 			`.contributor-option[data-color="${selectedMeal.color}"]`
@@ -264,8 +264,6 @@ function mealSelectionChange() {
 	}
 
 	mealFormFoodEl.innerText = selectedMeal.food;
-
-	// console.log(selectedMeal); //TEST
 }
 
 //TEST Extra Day Blocks
@@ -324,20 +322,43 @@ btnNotesDone.addEventListener('click', e => {
 
 //***** INSPECTOR *****
 
+// Choose what is visible in the inspector, Deselect calendar meals
+function changeInspectorView(option) {
+	contForm.classList.add('hidden');
+	newContForm.classList.add('hidden');
+	mealForm.classList.add('hidden');
+	document.querySelectorAll('.meal').forEach(m => m.classList.remove('selected'));
+
+	switch (option) {
+		case 'cont':
+			contForm.classList.remove('hidden');
+			break;
+		case 'new-cont':
+			newContForm.classList.remove('hidden');
+			break;
+		case 'meal':
+			mealForm.classList.remove('hidden');
+			document.querySelector(`#${selectedMeal.mealElId}`).classList.add('selected');
+	}
+	// }
+}
+
 //***** CONT-FORM *****
 
 function legendContClick(e) {
 	contForm.dataset.color = e.target.dataset.color;
 	contForm.dataset.arrIdx = e.target.dataset.arrIdx;
 	contFormName.innerText = e.target.innerText;
+	contFormNameInput.value = plan.contributors[e.target.dataset.arrIdx].name;
 	contFormColorSelect.innerHTML = '';
 	const colorOption = document.createElement('option');
 	colorOption.innerText = e.target.dataset.color;
 	contFormColorSelect.appendChild(colorOption);
 	renderContColorOptions();
+	renderContList();
 	contFormName.classList.remove('hidden'); //reveal name
 	contFormInputs.classList.add('hidden'); //hide inputs
-	contForm.classList.remove('hidden'); //reveal form
+	changeInspectorView('cont');
 }
 
 function renderContColorOptions() {
@@ -349,7 +370,6 @@ function renderContColorOptions() {
 }
 
 contFormName.addEventListener('click', e => {
-	contFormNameInput.value = e.target.innerText;
 	e.target.classList.add('hidden'); //hide name
 	contFormInputs.classList.remove('hidden'); //reveal inputs
 	contFormNameInput.focus();
@@ -394,6 +414,30 @@ contFormColorSelect.addEventListener('change', event => {
 	//TODO - PUT color change to database
 });
 
+// cont-form list of meals
+function renderContList() {
+	contFormList.innerHTML = '';
+
+	const allMeals = [...document.querySelectorAll('.meal')];
+	const mealList = allMeals.filter(meal => meal.dataset.color === contForm.dataset.color);
+
+	mealList.forEach(meal => {
+		const divEl = document.createElement('div');
+
+		const dateEl = document.createElement('p');
+		dateEl.classList = `list-date txt-sm`;
+		dateEl.innerText = `${meal.dataset.dayName}, ${meal.dataset.date}, ${meal.dataset.meal}`;
+		divEl.appendChild(dateEl);
+
+		const foodEl = document.createElement('p');
+		foodEl.classList.add('list-food');
+		foodEl.innerText = meal.dataset.food;
+		divEl.appendChild(foodEl);
+
+		contFormList.appendChild(divEl);
+	});
+}
+
 //***** NEW-CONT-FORM *****
 
 function renderNewColorOptions() {
@@ -419,7 +463,7 @@ btnNewContAdd.addEventListener('click', e => {
 
 	plan.contributors.push({
 		id: new Date().valueOf(),
-		name: newName.value ? newName.value : `Contributor ${plan.contributors.length + 1}`,
+		name: newName.value,
 		color: newContColors.value,
 	});
 
@@ -433,21 +477,25 @@ btnNewContAdd.addEventListener('click', e => {
 //***** MEAL-FORM *****
 
 // Contributors drop-down selector
-renderContributors();
 function renderContributors() {
+	// Clear existing options
+	mealFormContributorsEl.innerHTML = '';
+
+	// Create the 'none' option first
 	const noneOption = document.createElement('option');
-	noneOption.id = 'blank-option';
+	noneOption.id = 'none-option';
 	noneOption.dataset.color = 'white';
 	noneOption.dataset.contributor = '';
 	noneOption.innerText = 'none';
 	mealFormContributorsEl.appendChild(noneOption);
 
+	// Create options list of current contributors
 	plan.contributors.forEach(contributor => {
 		const contributorOption = document.createElement('option');
 		contributorOption.classList.add('contributor-option');
 		contributorOption.dataset.color = contributor.color;
 		contributorOption.dataset.contributor = contributor.id;
-		contributorOption.innerText = contributor.name;
+		contributorOption.innerText = contributor.name ? contributor.name : contributor.color;
 		mealFormContributorsEl.appendChild(contributorOption);
 	});
 }
@@ -499,6 +547,6 @@ function saveFood() {
 //TEST - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
-	console.log(plan.contributors);
+
 });
 //TEST - TEST BUTTON END

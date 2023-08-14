@@ -193,6 +193,23 @@ input[type='text'] {
 	cursor: pointer;
 }
 
+#cont-form-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.list-date {
+	color: var(--color-gray-light);
+	text-transform: capitalize;
+	/* text-align: center; */
+}
+
+.list-food {
+	font-size: 1rem;
+	font-weight: 400;
+}
+
 /* TEST */
 #test-button {
 	position: fixed;
