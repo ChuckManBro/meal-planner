@@ -24,9 +24,14 @@ const btnNotesDone = document.querySelector(`#btn-notes-done`);
 
 const contForm = document.querySelector(`#cont-form`);
 const contFormName = document.querySelector(`#cont-form-name`);
-const contFormInputs = document.querySelector(`#cont-form-inputs`);
+const contFormEditButton = document.querySelector(`#cont-form-edit-button`);
+const contFormEditWrapper = document.querySelector(`#cont-form-edit-wrapper`);
 const contFormNameInput = document.querySelector(`#cont-form-name-input`);
 const contFormColorSelect = document.querySelector(`#cont-form-color-select`);
+const contDelete = document.querySelector(`#cont-delete`);
+const contDeleteConfirm = document.querySelector(`#cont-delete-confirm`);
+const contDeleteYes = document.querySelector(`#cont-delete-yes`);
+const contDeleteNo = document.querySelector(`#cont-delete-no`);
 const contFormList = document.querySelector(`#cont-form-list`);
 
 const newContForm = document.querySelector(`#new-cont-form`);
@@ -118,7 +123,7 @@ function getMealPlan(id) {
 
 // LOCAL TESTER DATA
 import { mealPlans } from './meal-plan-data.js';
-plan = mealPlans[3];
+plan = mealPlans[0];
 
 //TEST - Examples
 console.log(`There are plans ${mealPlans.length} in the test database.`);
@@ -356,10 +361,39 @@ function legendContClick(e) {
 	contFormColorSelect.appendChild(colorOption);
 	renderContColorOptions();
 	renderContList();
+	contFormEditButton.classList.remove('hidden'); // reveal edit icon button
 	contFormName.classList.remove('hidden'); //reveal name
-	contFormInputs.classList.add('hidden'); //hide inputs
+	contFormEditWrapper.classList.add('hidden'); //hide inputs
+	contDelete.classList.remove('hidden'); //reveal delete button
+	contDeleteConfirm.classList.add('hidden'); // hide delete confirmation
 	changeInspectorView('cont');
 }
+
+contDelete.addEventListener('click', () => {
+	contDelete.classList.add('hidden'); //hide delete button
+	contDeleteConfirm.classList.remove('hidden'); // reveal confirmation
+});
+
+contDeleteYes.addEventListener('click', () => {
+	// change all this contributor's meals to white
+	const allMeals = [...document.querySelectorAll('.meal')];
+	const mealList = allMeals.filter(meal => meal.dataset.color === contForm.dataset.color);
+	mealList.forEach(meal => (meal.dataset.color = 'white'));
+
+	// splice this user from local data object
+	changeInspectorView(); // No argument for clear inspector
+	plan.contributors.splice(contForm.dataset.arrIdx, 1);
+
+	// Rerender legend
+	renderLegend();
+
+	//TODO - DELETE user from database
+});
+
+contDeleteNo.addEventListener('click', () => {
+	contDeleteConfirm.classList.add('hidden'); // hide confirmation
+	contDelete.classList.remove('hidden'); //reveal delete button
+});
 
 function renderContColorOptions() {
 	availableColors().forEach(c => {
@@ -369,16 +403,19 @@ function renderContColorOptions() {
 	});
 }
 
-contFormName.addEventListener('click', e => {
-	e.target.classList.add('hidden'); //hide name
-	contFormInputs.classList.remove('hidden'); //reveal inputs
+contFormEditButton.addEventListener('click', e => {
+	contFormEditButton.classList.add('hidden'); // hide edit icon button
+	contFormName.classList.add('hidden'); //hide name
+	contFormEditWrapper.classList.remove('hidden'); //reveal inputs
 	contFormNameInput.focus();
 });
 
 contFormNameInput.addEventListener('input', event => {
 	// Update name in the legend
-	document.querySelectorAll('.legend-contributor')[contForm.dataset.arrIdx].innerText =
-		event.target.value;
+	document.querySelectorAll('.legend-contributor')[contForm.dataset.arrIdx].innerText = event.target
+		.value
+		? event.target.value
+		: contForm.dataset.color;
 
 	// Clear/Start the typingTimer
 	clearTimeout(typingTimer);
@@ -547,6 +584,6 @@ function saveFood() {
 //TEST - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
-
+	console.log(plan.contributors);
 });
 //TEST - TEST BUTTON END

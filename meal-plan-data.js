@@ -23,17 +23,17 @@ const dataInJson = `
    {
     "id": "126",
     "name": "Chuck & Missy",
-    "color": "red"
+    "color": "gray"
    }
   ],
   "days": [
    {
     "breakfast": {
      "food": "Bacon and Eggs",
-     "contributor": "123"
+     "contributor": "126"
     },
     "lunch": {
-     "food": "fish",
+     "food": "BLTs, Potato Chips, Salad",
      "contributor": "124"
     },
     "supper": {
@@ -43,15 +43,15 @@ const dataInJson = `
    },
    {
     "breakfast": {
-     "food": "Cereal",
-     "contributor": "124"
+     "food": "Cinnamon Rolls, Eggs, Orange Juice",
+     "contributor": "123"
     },
     "lunch": {
      "food": "Chicken & Rice",
      "contributor": "125"
     },
     "supper": {
-     "food": "horse",
+     "food": "Vegetable Stew",
      "contributor": "123"
     }
    },
@@ -61,7 +61,7 @@ const dataInJson = `
      "contributor": ""
     },
     "lunch": {
-     "food": "fish",
+     "food": "Pizza and Salad",
      "contributor": "123"
     },
     "supper": {
