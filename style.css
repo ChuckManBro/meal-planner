@@ -162,6 +162,7 @@ form > header {
 	text-transform: capitalize;
 	font-size: 1.2rem;
 	font-weight: 500;
+	cursor: default;
 }
 
 label {
@@ -205,23 +206,29 @@ input[type='text'] {
 
 #icon-edit {
 	width: 1.2rem;
-	fill: var(--color-gray-light);
+	fill: white;
+	opacity: 70%;
+	transition: opacity 300ms;
+}
+
+#cont-form-edit-button:hover #icon-edit {
+	opacity: 1;
 }
 
 #cont-form-edit-wrapper {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: .8rem;
+	gap: 0.8rem;
 }
 
 #cont-form-color-select {
 	margin-left: 1rem;
 }
 
-#cont-delete-confirm>p{
+#cont-delete-confirm > p {
 	display: inline;
-	margin-right: .5rem;
+	margin-right: 0.5rem;
 }
 
 #cont-form-list {
@@ -238,6 +245,25 @@ input[type='text'] {
 .list-food {
 	font-size: 1rem;
 	font-weight: 400;
+}
+
+/***** MEAL-FORM *****/
+
+#swap-meal,
+#swap-instruction {
+	margin: 0 auto;
+}
+
+#swap-meal {
+	text-decoration: underline;
+	width: fit-content;
+	cursor: pointer;
+	opacity: 70%;
+	transition: opacity 300ms;
+}
+
+#swap-meal:hover {
+	opacity: 1;
 }
 
 /* TEST */

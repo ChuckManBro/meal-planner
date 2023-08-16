@@ -45,11 +45,14 @@ const mealFormMealNameEl = document.querySelector(`#meal-form-meal-name`);
 const mealFormDateEl = document.querySelector(`#meal-form-date`);
 const mealFormContributorsEl = document.querySelector(`#meal-form-contributors`);
 const mealFormFoodEl = document.querySelector(`#meal-form-food`);
+const swapMealEl = document.querySelector(`#swap-meal`);
+const swapInstruction = document.querySelector(`#swap-instruction`);
 
 // STARTER VARIABLES
 let plan;
 let selectedMeal;
 let selectedMealEl;
+let mealSwapMode = false;
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = [
 	'Jan',
@@ -410,6 +413,12 @@ contFormEditButton.addEventListener('click', e => {
 	contFormNameInput.focus();
 });
 
+// Prevent form from submitting when Enter is pressed
+contForm.addEventListener('submit', e => {
+	e.preventDefault();
+	changeInspectorView();
+});
+
 contFormNameInput.addEventListener('input', event => {
 	// Update name in the legend
 	document.querySelectorAll('.legend-contributor')[contForm.dataset.arrIdx].innerText = event.target
@@ -581,9 +590,16 @@ function saveFood() {
 	console.log(`FOOD SAVED`); //TEST
 }
 
+swapMealEl.addEventListener('click', e => {
+	mealSwapMode = true;
+	e.target.classList.add('hidden');
+	swapInstruction.classList.remove('hidden');
+});
+
 //TEST - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
+	console.log(`Meal Swap Mode: `, mealSwapMode);
 	console.log(plan.contributors);
 });
 //TEST - TEST BUTTON END
