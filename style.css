@@ -7,16 +7,15 @@ body {
 }
 
 #app-header {
-	background-color: var(--color-blue-dark);
-	color: white;
 	font-size: 1.2rem;
 	font-weight: 500;
-	padding: 4px;
+	cursor: pointer;
 }
 
 /***** LEGEND *****/
 
 div.legend {
+	background-color: var(--color-gray-light);
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.2rem;
@@ -51,14 +50,6 @@ div.cal {
 	color: var(--color-gray-dark);
 }
 
-/* TEST Blocks */
-.extra {
-	background-color: hotpink;
-	text-align: center;
-	border-radius: var(--radius-outer);
-	min-height: 80px;
-}
-
 .meal {
 	border-radius: var(--radius-inner);
 	line-height: 1rem;
@@ -88,7 +79,7 @@ div.cal {
 } */
 
 .selected {
-	outline: solid 3px var(--color-blue-dark);
+	outline: solid 3px var(--color-app);
 	outline-offset: -2px;
 }
 
@@ -165,6 +156,12 @@ form > header {
 	cursor: default;
 }
 
+.flex-line {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+}
+
 label {
 	font-family: 'Roboto', Helvetica, Arial, sans-serif;
 	font-size: 1rem;
@@ -172,7 +169,9 @@ label {
 }
 
 select,
-input[type='text'] {
+input[type='text'],
+input[type='number'],
+input[type='date'] {
 	font-family: 'Roboto', Helvetica, Arial, sans-serif;
 	font-size: 1rem;
 	font-weight: 400;
@@ -180,39 +179,32 @@ input[type='text'] {
 	background-color: white;
 	border: none;
 	border-radius: 50px;
-	padding-left: 0.4rem;
+	padding: 0 0.5rem;
+	height: 1.4rem;
 }
 
 .form-buttons {
 	display: flex;
 	justify-content: end;
-	gap: 4px;
-	margin-top: 4px;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+}
+
+/***** PLAN-FORM *****/
+
+#plan-name {
+	flex-grow: 1;
+}
+
+#start-date {
+	flex-grow: 1;
 }
 
 /***** CONT-FORM *****/
-
 #cont-form-edit-button {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 2rem;
-	height: 2rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-}
-
-#icon-edit {
-	width: 1.2rem;
-	fill: white;
-	opacity: 70%;
-	transition: opacity 300ms;
-}
-
-#cont-form-edit-button:hover #icon-edit {
-	opacity: 1;
 }
 
 #cont-form-edit-wrapper {
@@ -258,7 +250,7 @@ input[type='text'] {
 	text-decoration: underline;
 	width: fit-content;
 	cursor: pointer;
-	opacity: 70%;
+	opacity: 67%;
 	transition: opacity 300ms;
 }
 

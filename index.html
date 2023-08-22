@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
 
 		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon.png" />
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -12,7 +12,7 @@
 		<title>Meal Planner</title>
 	</head>
 	<body>
-		<header id="app-header"></header>
+		<header id="app-header" class="app-color"></header>
 
 		<section class="cal">
 			<div class="legend"></div>
@@ -36,19 +36,48 @@
 		</section>
 
 		<section class="inspector">
+			<form id="plan-form" class="app-color hidden">
+				<header>Meal Plan Settings</header>
+				<div class="flex-line">
+					<label for="plan-name">Name:</label>
+					<input
+						type="text"
+						name="name"
+						id="plan-name"
+						maxlength="30"
+						placeholder='e.g. "Smith Reunion"'
+						required
+					/>
+				</div>
+
+				<div class="flex-line">
+					<label for="start-date">Start:</label>
+					<input type="date" name="startDate" id="start-date" required />
+					<label for="duration">Days:</label>
+					<input type="number" name="duration" id="duration" value="4" min="1" max="14" required />
+				</div>
+
+				<div class="form-buttons">
+					<button type="button" id="btn-plan-cancel">Cancel</button>
+					<button id="btn-plan-done">Done</button>
+				</div>
+			</form>
+
 			<form id="cont-form" class="hidden">
 				<header id="cont-form-name"></header>
 
 				<div id="cont-form-edit-button">
-					<svg id="icon-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
-						<path
-							d="M204-204h59l336-336-59-59-336 336v59Zm573-394L598-777l49-49q25-25 59.5-25t59.5 25l60 60q24 24 24 59.5T826-647l-49 49ZM162-120q-17 0-29.5-12.5T120-162v-120q0-8 3-15.5t9-13.5l407-407 179 179-407 407q-6 6-13.5 9t-15.5 3H162Zm408-449-30-30 59 59-29-29Z"
-						/>
-					</svg>
+					<div class="edit-button">
+						<svg class="icon-edit" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+							<path
+								d="M204-204h59l336-336-59-59-336 336v59Zm573-394L598-777l49-49q25-25 59.5-25t59.5 25l60 60q24 24 24 59.5T826-647l-49 49ZM162-120q-17 0-29.5-12.5T120-162v-120q0-8 3-15.5t9-13.5l407-407 179 179-407 407q-6 6-13.5 9t-15.5 3H162Zm408-449-30-30 59 59-29-29Z"
+							/>
+						</svg>
+					</div>
 				</div>
 
 				<div id="cont-form-edit-wrapper" class="hidden">
-					<div id="cont-form-inputs">
+					<div id="cont-form-inputs" class="flex-line">
 						<input type="text" name="name" id="cont-form-name-input" maxlength="20" />
 						<select name="Color" id="cont-form-color-select"></select>
 					</div>
@@ -97,7 +126,7 @@
 					placeholder="Foods..."
 				></textarea>
 				<p id="swap-meal">Swap Meal</p>
-				<p id="swap-instruction" class="hidden">CLICK ANOTHER MEAL TO SWAP WITH</p>
+				<p id="swap-instruction" class="hidden">Select a meal to swap with</p>
 			</form>
 		</section>
 

@@ -4,6 +4,7 @@
 	--calendar-columns: 3;
 	--radius-inner: 8px;
 	--radius-outer: 10px;
+	--color-app: #005fcc;
 	--color-gray-light: #d5d5d5;
 	--color-gray-dark: #616161;
 	--color-brown: #795548;
@@ -12,7 +13,6 @@
 	--color-yellow: #e0b233;
 	--color-green: #029688;
 	--color-blue: #4285f4;
-	--color-blue-dark: #005fcc;
 	--color-purple: #9e69ae;
 }
 
@@ -46,11 +46,36 @@ button:hover {
 	color: black;
 }
 
+.edit-button {
+	width: 2rem;
+	height: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.icon-edit {
+	width: 1.2rem;
+	fill: white;
+	opacity: 67%;
+	transition: opacity 300ms;
+}
+
+.edit-button:hover .icon-edit {
+	opacity: 1;
+}
+
 .txt-sm {
 	font-size: 0.8rem;
 	font-weight: 500;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: geometricPrecision;
+}
+
+.app-color {
+	background-color: var(--color-app);
+	color: white;
 }
 
 [data-color='red'] {

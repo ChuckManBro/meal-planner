@@ -9,7 +9,7 @@ console.log(new Date(todaysDate))
  */
 
 // DOM ELEMENTS
-const appHeaderEl = document.querySelector(`#app-header`);
+const appHeader = document.querySelector(`#app-header`);
 
 const legendDiv = document.querySelector(`div.legend`);
 
@@ -21,6 +21,8 @@ const notesForm = document.querySelector(`form.notes`);
 const notesFormText = document.querySelector(`textarea.notes`);
 const btnNotesCancel = document.querySelector(`#btn-notes-cancel`);
 const btnNotesDone = document.querySelector(`#btn-notes-done`);
+
+const planForm = document.querySelector(`#plan-form`);
 
 const contForm = document.querySelector(`#cont-form`);
 const contFormName = document.querySelector(`#cont-form-name`);
@@ -128,12 +130,11 @@ function getMealPlan(id) {
 import { mealPlans } from './meal-plan-data.js';
 plan = mealPlans[0];
 
-//TEST - Examples
-console.log(`There are plans ${mealPlans.length} in the test database.`);
-console.log(`${plan.name} has ${plan.days.length} days scheduled.`);
-
 //***** HEADER *****
-appHeaderEl.innerText = plan.name;
+appHeader.innerText = plan.name;
+appHeader.addEventListener('click', () => {
+	changeInspectorView('plan');
+});
 
 //***** LEGEND *****
 
@@ -175,11 +176,12 @@ function renderLegend() {
 	}
 }
 
+//********************
 //***** CALENDAR *****
+//********************
 
 // Set calendar's CSS Grid to max of 7 columns
 const length = plan.days.length;
-// const length = 11; //TEST
 const columns = length > 7 ? Math.ceil(length / 2) : length;
 document.querySelector(':root').style.setProperty('--calendar-columns', columns);
 
@@ -242,19 +244,67 @@ plan.days.forEach((day, dayIndex) => {
 		mealEl.dataset.dayName = thisDayName;
 		mealEl.dataset.date = thisMonthAndDate;
 		mealEl.dataset.food = day[meal].food;
+		mealEl.dataset.contributor = day[meal].contributor;
 
-		// Click Events
-		mealEl.addEventListener('click', e => {
-			selectedMeal = e.target.dataset;
-			selectedMeal.mealElId = e.target.id;
-			selectedMealEl = document.getElementById(e.target.id);
-			mealSelectionChange();
-			changeInspectorView('meal');
-		});
+		// Click Event Listener
+		mealEl.addEventListener('click', mealClick);
 
+		// Append Meal Element to the Day
 		dayEl.appendChild(mealEl);
 	}
 });
+
+// Meal Click Events (swap or make selection)
+function mealClick(e) {
+	if (mealSwapMode) {
+		// Do nothing and return to defaults if same meal is selected
+		if (e.target.id === selectedMeal.mealElId) {
+			mealSwapMode = false;
+			changeInspectorView();
+			return;
+		}
+
+		// Hold data of second selection
+		const holdMealElId = e.target.id;
+		const holdColor = e.target.dataset.color;
+		const holdContributor = e.target.dataset.contributor;
+		const holdDay = e.target.dataset.day;
+		const holdFood = e.target.dataset.food;
+		const holdMeal = e.target.dataset.meal;
+
+		// Update DOM element of first selection
+		const firstSelection = document.getElementById(selectedMeal.mealElId);
+		firstSelection.dataset.color = holdColor;
+		firstSelection.dataset.contributor = holdContributor;
+		firstSelection.dataset.food = holdFood;
+		firstSelection.innerHTML = holdFood;
+		// Update first selection in local data object
+		plan.days[selectedMeal.day][selectedMeal.meal].food = holdFood;
+		plan.days[selectedMeal.day][selectedMeal.meal].contributor = holdContributor;
+		//TODO - PUT first selection changes to database
+
+		// Update DOM element of second selection
+		const secondSelection = document.getElementById(holdMealElId);
+		secondSelection.dataset.color = selectedMeal.color;
+		secondSelection.dataset.contributor = selectedMeal.contributor;
+		secondSelection.dataset.food = selectedMeal.food;
+		secondSelection.innerHTML = selectedMeal.food;
+		// Update second selection in local data object
+		plan.days[holdDay][holdMeal].food = selectedMeal.food;
+		plan.days[holdDay][holdMeal].contributor = selectedMeal.contributor;
+		//TODO - PUT second selection changes to database
+
+		// Return defaults
+		mealSwapMode = false;
+		changeInspectorView();
+	} else {
+		selectedMeal = { ...e.target.dataset };
+		selectedMeal.mealElId = e.target.id;
+		selectedMealEl = document.getElementById(e.target.id);
+		mealSelectionChange();
+		changeInspectorView('meal');
+	}
+}
 
 function mealSelectionChange() {
 	mealForm.reset();
@@ -274,16 +324,7 @@ function mealSelectionChange() {
 	mealFormFoodEl.innerText = selectedMeal.food;
 }
 
-//TEST Extra Day Blocks
-let extraSpaces = length - plan.days.length;
-for (let i = extraSpaces; i > 0; i--) {
-	const extraBlock = document.createElement('p');
-	extraBlock.classList.add('extra');
-	extraBlock.innerText = `extra block ${i}`;
-	calEl.appendChild(extraBlock);
-}
-
-//***** NOTES *****
+//***** NOTES ********
 
 renderNotes();
 
@@ -328,16 +369,24 @@ btnNotesDone.addEventListener('click', e => {
 	renderNotes();
 });
 
-//***** INSPECTOR *****
+//********************
+//***** INSPECTOR ****
+//********************
 
 // Choose what is visible in the inspector, Deselect calendar meals
 function changeInspectorView(option) {
+	planForm.classList.add('hidden');
 	contForm.classList.add('hidden');
 	newContForm.classList.add('hidden');
 	mealForm.classList.add('hidden');
-	document.querySelectorAll('.meal').forEach(m => m.classList.remove('selected'));
+	document.querySelectorAll('.meal').forEach(m => m.classList.remove('selected')); // remove selection outline from all meal elements
+	swapMealEl.classList.remove('hidden'); // reveal 'Swap Meal' text
+	swapInstruction.classList.add('hidden'); // hide swap instructions
 
 	switch (option) {
+		case 'plan':
+			planForm.classList.remove('hidden');
+			break;
 		case 'cont':
 			contForm.classList.remove('hidden');
 			break;
@@ -351,7 +400,9 @@ function changeInspectorView(option) {
 	// }
 }
 
-//***** CONT-FORM *****
+// ********** PLAN-FORM **********
+
+// ********** CONT-FORM **********
 
 function legendContClick(e) {
 	contForm.dataset.color = e.target.dataset.color;
@@ -550,17 +601,23 @@ mealFormContributorsEl.addEventListener('change', e => {
 	// New selection info
 	const options = document.getElementById('meal-form-contributors').children;
 	const selection = e.target.selectedIndex;
-	// console.log(`Selected Contributor: ${options[selection].dataset.contributor}`); //TEST
 
 	// Set color of self
 	mealForm.dataset.color = options[selection].dataset.color;
 
-	// Set color of selected meal in cal
-	document.getElementById(selectedMeal.mealElId).dataset.color = options[selection].dataset.color;
+	// Set color and contributor of selected meal in calendar
+	const mealElData = document.getElementById(selectedMeal.mealElId).dataset;
+	mealElData.color = options[selection].dataset.color;
+	mealElData.contributor = options[selection].dataset.contributor;
 
-	// Save data
+	// Save to local data object
 	plan.days[selectedMeal.day][selectedMeal.meal].contributor =
 		options[selection].dataset.contributor;
+
+	// Update selectedMeal data
+	selectedMeal.contributor = options[selection].dataset.contributor;
+	selectedMeal.color = options[selection].dataset.color;
+
 	//TODO - save  meal-contributor to database
 });
 
@@ -575,7 +632,7 @@ mealFormFoodEl.addEventListener('input', e => {
 	typingTimerActive = true;
 });
 
-//When textarea loses focus, clear typingTimer and save
+// When textarea loses focus, clear typingTimer and save
 mealFormFoodEl.addEventListener('blur', () => {
 	if (typingTimerActive) {
 		saveFood();
@@ -585,11 +642,17 @@ mealFormFoodEl.addEventListener('blur', () => {
 });
 
 function saveFood() {
+	// Save to local data object
 	plan.days[selectedMeal.day][selectedMeal.meal].food = mealFormFoodEl.value;
+
+	// Update selectedMeal data
+	selectedMeal.food = mealFormFoodEl.value;
+
 	//TODO - Save food to database here
 	console.log(`FOOD SAVED`); //TEST
 }
 
+// Swap Meals
 swapMealEl.addEventListener('click', e => {
 	mealSwapMode = true;
 	e.target.classList.add('hidden');
@@ -599,7 +662,7 @@ swapMealEl.addEventListener('click', e => {
 //TEST - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
-	console.log(`Meal Swap Mode: `, mealSwapMode);
-	console.log(plan.contributors);
+	console.log(selectedMeal);
+	// console.log(plan.days);
 });
 //TEST - TEST BUTTON END
