@@ -57,9 +57,17 @@
 					<input type="number" name="duration" id="duration" value="4" min="1" max="14" required />
 				</div>
 
-				<div class="form-buttons">
+				<div id="plan-buttons" class="form-buttons">
 					<button type="button" id="btn-plan-cancel">Cancel</button>
 					<button id="btn-plan-done">Done</button>
+				</div>
+
+				<div id="plan-confirm" class="hidden">
+					<p>Some information will be lost. Are you sure you want to reduce days?</p>
+					<div class="form-buttons">
+						<button id="plan-confirm-continue">Continue</button>
+						<button type="button" id="plan-confirm-cancel">Cancel</button>
+					</div>
 				</div>
 			</form>
 

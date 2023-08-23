@@ -8,7 +8,8 @@ console.log(todaysDate)
 console.log(new Date(todaysDate))
  */
 
-// DOM ELEMENTS
+//SECTION - DOM Elements
+
 const appHeader = document.querySelector(`#app-header`);
 
 const legendDiv = document.querySelector(`div.legend`);
@@ -23,6 +24,15 @@ const btnNotesCancel = document.querySelector(`#btn-notes-cancel`);
 const btnNotesDone = document.querySelector(`#btn-notes-done`);
 
 const planForm = document.querySelector(`#plan-form`);
+const planNameEl = document.querySelector(`#plan-name`);
+const startDateEl = document.querySelector(`#start-date`);
+const durationEl = document.querySelector(`#duration`);
+const planButtons = document.querySelector(`#plan-buttons`);
+const btnPlanCancel = document.querySelector(`#btn-plan-cancel`);
+const btnPlanDone = document.querySelector(`#btn-plan-done`);
+const planConfirm = document.querySelector(`#plan-confirm`);
+const planConfirmContinue = document.querySelector(`#plan-confirm-continue`);
+const planConfirmCancel = document.querySelector(`#plan-confirm-cancel`);
 
 const contForm = document.querySelector(`#cont-form`);
 const contFormName = document.querySelector(`#cont-form-name`);
@@ -49,27 +59,13 @@ const mealFormContributorsEl = document.querySelector(`#meal-form-contributors`)
 const mealFormFoodEl = document.querySelector(`#meal-form-food`);
 const swapMealEl = document.querySelector(`#swap-meal`);
 const swapInstruction = document.querySelector(`#swap-instruction`);
+//!SECTION - DOM Elements END
 
-// STARTER VARIABLES
+//SECTION - Starter Variables
 let plan;
 let selectedMeal;
 let selectedMealEl;
 let mealSwapMode = false;
-const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const monthNames = [
-	'Jan',
-	'Feb',
-	'Mar',
-	'Apr',
-	'May',
-	'Jun',
-	'Jul',
-	'Aug',
-	'Sep',
-	'Oct',
-	'Nov',
-	'Dec',
-];
 const colorOptions = [
 	'red',
 	'orange',
@@ -81,6 +77,21 @@ const colorOptions = [
 	'gray',
 	'black',
 ];
+const blankDay = {
+	breakfast: {
+		food: '',
+		contributor: '',
+	},
+	lunch: {
+		food: '',
+		contributor: '',
+	},
+	supper: {
+		food: '',
+		contributor: '',
+	},
+};
+//!SECTION - Starter Variables END
 
 // TYPING TIMER
 let typingTimer;
@@ -116,7 +127,7 @@ function getMealPlan(id) {
 			console.log(`Error getting json from MockAPI`);
 		})
 		.then(data => {
-			console.log(data); //TEST
+			console.log(data); //REMOVE WHEN DONE
 			plan = data;
 		})
 		.catch(error => {
@@ -130,13 +141,15 @@ function getMealPlan(id) {
 import { mealPlans } from './meal-plan-data.js';
 plan = mealPlans[0];
 
-//***** HEADER *****
+//SECTION - Header
 appHeader.innerText = plan.name;
 appHeader.addEventListener('click', () => {
+	renderPlanForm();
 	changeInspectorView('plan');
 });
+//!SECTION - Header END
 
-//***** LEGEND *****
+//SECTION - Legend
 
 renderLegend();
 
@@ -175,84 +188,89 @@ function renderLegend() {
 		legendDiv.appendChild(newAddEl);
 	}
 }
+//!SECTION - Legend END
 
-//********************
-//***** CALENDAR *****
-//********************
+//SECTION - Calendar
 
-// Set calendar's CSS Grid to max of 7 columns
-const length = plan.days.length;
-const columns = length > 7 ? Math.ceil(length / 2) : length;
-document.querySelector(':root').style.setProperty('--calendar-columns', columns);
+renderCalendar();
 
-// Generate startDate from YYYY-MM-DD format
-let offset = (new Date().getTimezoneOffset() + 180) * 60000;
-let startDate = new Date(plan.startDate.slice(0, 10));
-startDate = startDate.getTime() + offset;
-startDate = new Date(startDate);
+function renderCalendar() {
+	// Clear previous calendar
+	calEl.innerHTML = '';
 
-// Render the Calendar
-let mealIndex = 0;
-plan.days.forEach((day, dayIndex) => {
-	// Create day element
-	const dayEl = document.createElement('div');
-	dayEl.classList.add('day');
+	// Set calendar's CSS Grid to max of 7 columns
+	const length = plan.days.length;
+	const columns = length > 7 ? Math.ceil(length / 2) : length;
+	document.querySelector(':root').style.setProperty('--calendar-columns', columns);
 
-	// Determine the day's date
-	let thisDate = new Date(startDate);
-	thisDate.setDate(thisDate.getDate() + dayIndex);
+	// Generate startDate from YYYY-MM-DD format (account for timezone and DST offsets)
+	let startDate = new Date(plan.startDate.slice(0, 10));
+	let offset = new Date(startDate).getTimezoneOffset() * 60000; //offset of the plan's date, not the current date
+	startDate = startDate.getTime() + offset; //this converts to ms
+	startDate = new Date(startDate); //this converts ms back to date object
 
-	const thisDayName = dayNames[thisDate.getDay()];
-	const thisMonthAndDate = `${monthNames[thisDate.getMonth()]} ${thisDate.getDate()}`;
+	// Render the Calendar
+	let mealIndex = 0;
+	plan.days.forEach((day, dayIndex) => {
+		// Create day element
+		const dayEl = document.createElement('div');
+		dayEl.classList.add('day');
 
-	let dateText = `${thisDayName}\n${thisMonthAndDate}`;
+		// Determine the day's date
+		let thisDate = new Date(startDate);
+		thisDate.setDate(thisDate.getDate() + dayIndex);
 
-	// Append the date to the day
-	const dateEl = document.createElement('p');
-	dateEl.classList.add('date');
-	dateEl.classList.add('txt-sm');
-	dateEl.innerText = dateText;
+		const thisDayName = thisDate.toDateString().slice(0, 3);
+		const thisMonthAndDate = `${thisDate.toDateString().slice(4, 7)} ${thisDate.getDate()}`;
 
-	// Append the day to the calendar
-	dayEl.appendChild(dateEl);
-	calEl.appendChild(dayEl);
+		let dateText = `${thisDayName}\n${thisMonthAndDate}`;
 
-	// Render meals
+		// Append the date to the day
+		const dateEl = document.createElement('p');
+		dateEl.classList.add('date');
+		dateEl.classList.add('txt-sm');
+		dateEl.innerText = dateText;
 
-	for (let meal in day) {
-		mealIndex++;
-		const mealEl = document.createElement('p');
-		mealEl.classList.add('meal');
-		mealEl.classList.add('txt-sm');
+		// Append the day to the calendar
+		dayEl.appendChild(dateEl);
+		calEl.appendChild(dayEl);
 
-		// innerText food
-		mealEl.innerText = day[meal].food;
+		// Render meals
+		for (let meal in day) {
+			mealIndex++;
+			const mealEl = document.createElement('p');
+			mealEl.classList.add('meal');
+			mealEl.classList.add('txt-sm');
 
-		// Determine color
-		let color;
-		if (day[meal].contributor) {
-			color = plan.contributors.find(c => c.id === day[meal].contributor).color;
-		} else {
-			color = 'white';
+			// innerText food
+			mealEl.innerText = day[meal].food;
+
+			// Determine color
+			let color;
+			if (day[meal].contributor) {
+				color = plan.contributors.find(c => c.id === day[meal].contributor).color;
+			} else {
+				color = 'white';
+			}
+			mealEl.dataset.color = color;
+
+			// Custom properties for selecting and targeting changes
+			mealEl.id = `meal-${mealIndex}`;
+			mealEl.dataset.day = dayIndex;
+			mealEl.dataset.meal = meal;
+			mealEl.dataset.dayName = thisDayName;
+			mealEl.dataset.date = thisMonthAndDate;
+			mealEl.dataset.food = day[meal].food;
+			mealEl.dataset.contributor = day[meal].contributor;
+
+			// Click Event Listener
+			mealEl.addEventListener('click', mealClick);
+
+			// Append Meal Element to the Day
+			dayEl.appendChild(mealEl);
 		}
-		mealEl.dataset.color = color;
-
-		// Custom properties for selecting and targeting changes
-		mealEl.id = `meal-${mealIndex}`;
-		mealEl.dataset.day = dayIndex;
-		mealEl.dataset.meal = meal;
-		mealEl.dataset.dayName = thisDayName;
-		mealEl.dataset.date = thisMonthAndDate;
-		mealEl.dataset.food = day[meal].food;
-		mealEl.dataset.contributor = day[meal].contributor;
-
-		// Click Event Listener
-		mealEl.addEventListener('click', mealClick);
-
-		// Append Meal Element to the Day
-		dayEl.appendChild(mealEl);
-	}
-});
+	});
+}
 
 // Meal Click Events (swap or make selection)
 function mealClick(e) {
@@ -323,8 +341,9 @@ function mealSelectionChange() {
 
 	mealFormFoodEl.innerText = selectedMeal.food;
 }
+//!SECTION - Calendar END
 
-//***** NOTES ********
+//SECTION - Notes
 
 renderNotes();
 
@@ -368,10 +387,9 @@ btnNotesDone.addEventListener('click', e => {
 	plan.notes = notesFormText.value;
 	renderNotes();
 });
+//!SECTION - Notes END
 
-//********************
-//***** INSPECTOR ****
-//********************
+//SECTION - Inspector
 
 // Choose what is visible in the inspector, Deselect calendar meals
 function changeInspectorView(option) {
@@ -399,10 +417,77 @@ function changeInspectorView(option) {
 	}
 	// }
 }
+//!SECTION - Inspector END
 
-// ********** PLAN-FORM **********
+//SECTION - Plan Form
 
-// ********** CONT-FORM **********
+function renderPlanForm() {
+	planNameEl.value = plan.name;
+	startDateEl.value = plan.startDate.slice(0, 10);
+	durationEl.value = plan.days.length;
+}
+
+btnPlanCancel.addEventListener('click', () => {
+	changeInspectorView();
+	planForm.reset();
+});
+
+btnPlanDone.addEventListener('click', e => {
+	e.preventDefault();
+
+	// Confirm reduction of days (validate lost data)
+	if (durationEl.value < plan.days.length) {
+		const eliminatedDays = plan.days.slice(durationEl.value);
+
+		const allDayValues = eliminatedDays.map(day => Object.values(day)).flat();
+		const allMealValues = allDayValues.map(meal => Object.values(meal)).flat();
+		const mealsEmpty = allMealValues.every(value => value === '');
+
+		if (mealsEmpty) {
+			savePlanSettings();
+		} else {
+			planButtons.classList.add('hidden'); //hide cancel/done buttons
+			planConfirm.classList.remove('hidden'); //reveal confirmation
+		}
+	} else {
+		savePlanSettings();
+	}
+});
+
+planConfirmContinue.addEventListener('click', e => {
+	e.preventDefault();
+	savePlanSettings();
+});
+
+planConfirmCancel.addEventListener('click', () => {
+	planButtons.classList.remove('hidden'); //reveal cancel/done buttons
+	planConfirm.classList.add('hidden'); //hide confirmation
+});
+
+function savePlanSettings() {
+	changeInspectorView();
+	console.log(`plan settings saved!!!`); //REMOVE WHEN DONE
+
+	// Save Plan name, startDate, duration-change to local data object
+	plan.name = planNameEl.value;
+	plan.startDate = startDateEl.value;
+
+	if (durationEl.value < plan.days.length) plan.days.splice(durationEl.value); //remove days if duration was decreased//FIXME - WHY THE REPEATS!?
+
+	const additionalDays = Math.max(0, durationEl.value - plan.days.length);
+	for (let i = 1; i <= additionalDays; i++) {
+		plan.days.push(blankDay);
+	}
+
+	// Rerender calendar, Update plan name
+	renderCalendar();
+
+	//TODO - Save Plan name, startDate, duration-change to database
+}
+
+//!SECTION - Plan Form END
+
+//SECTION - Cont Form
 
 function legendContClick(e) {
 	contForm.dataset.color = e.target.dataset.color;
@@ -487,7 +572,7 @@ function saveName() {
 	// Update local object data
 	plan.contributors[contForm.dataset.arrIdx].name = contFormNameInput.value;
 	//TODO - PUT name change to database
-	console.log('NAME SAVED'); //TEST
+	console.log('NAME SAVED'); //REMOVE WHEN DONE
 }
 
 //When name input loses focus, clear typingTimer and save
@@ -534,8 +619,9 @@ function renderContList() {
 		contFormList.appendChild(divEl);
 	});
 }
+//!SECTION - Cont Form END
 
-//***** NEW-CONT-FORM *****
+//SECTION - New Cont Form
 
 function renderNewColorOptions() {
 	newContColors.innerHTML = '';
@@ -570,8 +656,9 @@ btnNewContAdd.addEventListener('click', e => {
 
 	renderLegend();
 });
+//!SECTION - New Cont Form END
 
-//***** MEAL-FORM *****
+//SECTION - Meal Form
 
 // Contributors drop-down selector
 function renderContributors() {
@@ -649,7 +736,7 @@ function saveFood() {
 	selectedMeal.food = mealFormFoodEl.value;
 
 	//TODO - Save food to database here
-	console.log(`FOOD SAVED`); //TEST
+	console.log(`FOOD SAVED`); //REMOVE WHEN DONE
 }
 
 // Swap Meals
@@ -658,11 +745,12 @@ swapMealEl.addEventListener('click', e => {
 	e.target.classList.add('hidden');
 	swapInstruction.classList.remove('hidden');
 });
+//!SECTION - Meal Form END
 
-//TEST - TEST BUTTON START
+//REMOVE WHEN DONE - TEST BUTTON START
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
-	console.log(selectedMeal);
-	// console.log(plan.days);
+	// console.log(selectedMeal);
+	console.log(plan.days);
 });
-//TEST - TEST BUTTON END
+//REMOVE WHEN DONE - TEST BUTTON END
