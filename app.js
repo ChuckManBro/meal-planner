@@ -248,7 +248,7 @@ function renderCalendar() {
 			// Determine color
 			let color;
 			if (day[meal].contributor) {
-				color = plan.contributors.find(c => c.id === day[meal].contributor).color;
+				color = plan.contributors.find(c => c.id == day[meal].contributor).color;//do not use strict equality
 			} else {
 				color = 'white';
 			}
@@ -457,6 +457,8 @@ btnPlanDone.addEventListener('click', e => {
 planConfirmContinue.addEventListener('click', e => {
 	e.preventDefault();
 	savePlanSettings();
+	planButtons.classList.remove('hidden'); //reveal cancel/done buttons
+	planConfirm.classList.add('hidden'); //hide confirmation
 });
 
 planConfirmCancel.addEventListener('click', () => {
@@ -470,13 +472,14 @@ function savePlanSettings() {
 
 	// Save Plan name, startDate, duration-change to local data object
 	plan.name = planNameEl.value;
+	appHeader.innerText = planNameEl.value;
 	plan.startDate = startDateEl.value;
 
 	if (durationEl.value < plan.days.length) plan.days.splice(durationEl.value); //remove days if duration was decreased//FIXME - WHY THE REPEATS!?
 
 	const additionalDays = Math.max(0, durationEl.value - plan.days.length);
 	for (let i = 1; i <= additionalDays; i++) {
-		plan.days.push(blankDay);
+		plan.days.push(structuredClone(blankDay));
 	}
 
 	// Rerender calendar, Update plan name
@@ -751,6 +754,6 @@ swapMealEl.addEventListener('click', e => {
 document.getElementById('test-button').addEventListener('click', () => {
 	console.log(`TEST BUTTON CLICK:`);
 	// console.log(selectedMeal);
-	console.log(plan.days);
+	console.log(plan);
 });
 //REMOVE WHEN DONE - TEST BUTTON END
