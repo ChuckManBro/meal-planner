@@ -21,7 +21,7 @@ const dataInJson = `
     "color": "purple"
    },
    {
-    "id": "126",
+    "id": 126,
     "name": "Chuck & Missy",
     "color": "gray"
    }
@@ -307,39 +307,11 @@ const dataInJson = `
   "id": "3"
  },
  {
-  "name": "My Fancy Blank Meal Plan",
-  "startDate": "2023-08-12",
+  "name": "",
+  "startDate": "2023-08-24",
   "notes": "",
   "contributors": [],
   "days": [
-   {
-    "breakfast": {
-     "food": "",
-     "contributor": ""
-    },
-    "lunch": {
-     "food": "",
-     "contributor": ""
-    },
-    "supper": {
-     "food": "",
-     "contributor": ""
-    }
-   },
-   {
-    "breakfast": {
-     "food": "",
-     "contributor": ""
-    },
-    "lunch": {
-     "food": "",
-     "contributor": ""
-    },
-    "supper": {
-     "food": "",
-     "contributor": ""
-    }
-   },
    {
     "breakfast": {
      "food": "",

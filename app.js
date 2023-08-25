@@ -142,7 +142,7 @@ import { mealPlans } from './meal-plan-data.js';
 plan = mealPlans[0];
 
 //SECTION - Header
-appHeader.innerText = plan.name;
+appHeader.innerText = plan.name ? plan.name : `CLICK HERE TO BEGIN`;
 appHeader.addEventListener('click', () => {
 	renderPlanForm();
 	changeInspectorView('plan');
@@ -163,8 +163,14 @@ function renderLegend() {
 		newLegend.dataset.color = c.color;
 		newLegend.innerText = c.name ? c.name : c.color;
 		newLegend.addEventListener('click', legendContClick);
+		const newCount = document.createElement('span');
+		newCount.id = `count-${idx}`;
+		newLegend.appendChild(newCount);
 		legendDiv.appendChild(newLegend);
 	});
+
+	// Update contributions count indicators
+	countContributions();
 
 	// 'Add Contributor' button at end of legend list
 	if (plan.contributors.length < colorOptions.length) {
@@ -187,6 +193,23 @@ function renderLegend() {
 
 		legendDiv.appendChild(newAddEl);
 	}
+}
+
+function countContributions() {
+	for (let i = 0; i < plan.contributors.length; i++) {
+		let total = 0;
+		plan.days.forEach(day => {
+			const mealsArr = ['breakfast', 'lunch', 'supper'];
+			mealsArr.forEach(meal => {
+				if (day[meal].contributor == plan.contributors[i].id) {
+					total++;
+				}
+			});
+		});
+
+		document.getElementById(`count-${i}`).innerText = total === 0 ? '' : ` (${total})`;
+	}
+	//TODO - Change the look of count indicator
 }
 //!SECTION - Legend END
 
@@ -248,7 +271,7 @@ function renderCalendar() {
 			// Determine color
 			let color;
 			if (day[meal].contributor) {
-				color = plan.contributors.find(c => c.id == day[meal].contributor).color;//do not use strict equality
+				color = plan.contributors.find(c => c.id == day[meal].contributor).color; //do not use strict equality
 			} else {
 				color = 'white';
 			}
@@ -468,14 +491,13 @@ planConfirmCancel.addEventListener('click', () => {
 
 function savePlanSettings() {
 	changeInspectorView();
-	console.log(`plan settings saved!!!`); //REMOVE WHEN DONE
 
 	// Save Plan name, startDate, duration-change to local data object
-	plan.name = planNameEl.value;
-	appHeader.innerText = planNameEl.value;
+	plan.name = planNameEl.value ? planNameEl.value : 'Meal Plan';
+	appHeader.innerText = plan.name;
 	plan.startDate = startDateEl.value;
 
-	if (durationEl.value < plan.days.length) plan.days.splice(durationEl.value); //remove days if duration was decreased//FIXME - WHY THE REPEATS!?
+	plan.days.splice(durationEl.value);
 
 	const additionalDays = Math.max(0, durationEl.value - plan.days.length);
 	for (let i = 1; i <= additionalDays; i++) {
@@ -493,13 +515,13 @@ function savePlanSettings() {
 //SECTION - Cont Form
 
 function legendContClick(e) {
-	contForm.dataset.color = e.target.dataset.color;
-	contForm.dataset.arrIdx = e.target.dataset.arrIdx;
-	contFormName.innerText = e.target.innerText;
-	contFormNameInput.value = plan.contributors[e.target.dataset.arrIdx].name;
+	contForm.dataset.color = e.currentTarget.dataset.color;
+	contForm.dataset.arrIdx = e.currentTarget.dataset.arrIdx;
+	contFormName.innerText = plan.contributors[e.currentTarget.dataset.arrIdx].name;
+	contFormNameInput.value = plan.contributors[e.currentTarget.dataset.arrIdx].name;
 	contFormColorSelect.innerHTML = '';
 	const colorOption = document.createElement('option');
-	colorOption.innerText = e.target.dataset.color;
+	colorOption.innerText = e.currentTarget.dataset.color;
 	contFormColorSelect.appendChild(colorOption);
 	renderContColorOptions();
 	renderContList();
@@ -517,6 +539,16 @@ contDelete.addEventListener('click', () => {
 });
 
 contDeleteYes.addEventListener('click', () => {
+	// remove this contributor from plan.days.meal.contributor
+	plan.days.forEach(day => {
+		const mealsArr = ['breakfast', 'lunch', 'supper'];
+		mealsArr.forEach(m => {
+			if (day[m].contributor == plan.contributors[contForm.dataset.arrIdx].id) {
+				day[m].contributor = '';
+			}
+		});
+	});
+
 	// change all this contributor's meals to white
 	const allMeals = [...document.querySelectorAll('.meal')];
 	const mealList = allMeals.filter(meal => meal.dataset.color === contForm.dataset.color);
@@ -530,6 +562,8 @@ contDeleteYes.addEventListener('click', () => {
 	renderLegend();
 
 	//TODO - DELETE user from database
+
+	//TODO - Remove this user id from all associated meals in database
 });
 
 contDeleteNo.addEventListener('click', () => {
@@ -688,27 +722,29 @@ function renderContributors() {
 }
 
 mealFormContributorsEl.addEventListener('change', e => {
-	// New selection info
-	const options = document.getElementById('meal-form-contributors').children;
-	const selection = e.target.selectedIndex;
+	// Selected Option
+	const selection =
+		document.getElementById('meal-form-contributors').children[e.target.selectedIndex];
 
 	// Set color of self
-	mealForm.dataset.color = options[selection].dataset.color;
+	mealForm.dataset.color = selection.dataset.color;
 
 	// Set color and contributor of selected meal in calendar
 	const mealElData = document.getElementById(selectedMeal.mealElId).dataset;
-	mealElData.color = options[selection].dataset.color;
-	mealElData.contributor = options[selection].dataset.contributor;
+	mealElData.color = selection.dataset.color;
+	mealElData.contributor = selection.dataset.contributor;
 
 	// Save to local data object
-	plan.days[selectedMeal.day][selectedMeal.meal].contributor =
-		options[selection].dataset.contributor;
+	plan.days[selectedMeal.day][selectedMeal.meal].contributor = selection.dataset.contributor;
 
 	// Update selectedMeal data
-	selectedMeal.contributor = options[selection].dataset.contributor;
-	selectedMeal.color = options[selection].dataset.color;
+	selectedMeal.contributor = selection.dataset.contributor;
+	selectedMeal.color = selection.dataset.color;
 
 	//TODO - save  meal-contributor to database
+
+	//Update legend count indicators
+	countContributions(); //FIXME - determine if needed
 });
 
 // Food textarea updates while typing
